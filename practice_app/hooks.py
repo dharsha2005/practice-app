@@ -266,6 +266,11 @@ export_python_type_annotations = True
 
 # Require all whitelisted methods to have type annotations
 require_type_annotated_api_methods = True
+doc_events = {
+    "ToDo": {
+        "validate": "practice_app.api.custom_logic"
+    }
+}
 
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
