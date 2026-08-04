@@ -7,7 +7,7 @@ def custom_logic(doc, method):
 @frappe.whitelist(allow_guest=True)
 def assignment_api():
     practice_manager = DocType("practice-manager")
-    child = Doctype("practice-child")
+    child = DocType("practice-child")
     query = (
         frappe.qb.from_(practice_manager)
         .join(child).on(practice_manager.name == child.parent)
@@ -25,10 +25,10 @@ def assignment_api():
         pr = records[0]['name']
         doc = frappe.get_doc("practice-manager",pr)
         frappe.db.set_value(
-            doctype="practice-manager",
-            name=pr,
-            field_name="age",
-            value=20
+            "practice-manager",
+            pr,
+            "age",
+            20
         )
         frappe.db.commit()
     return query.run(as_dict=True)

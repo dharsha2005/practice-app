@@ -272,6 +272,12 @@ doc_events = {
     }
 }
 
+scheduler_events = {
+    "daily": [
+        "practice_app.tasks.daily_maintenance"
+    ]
+}
+
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
