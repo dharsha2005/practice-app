@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class TestDocument(Document):
+class Childtable(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,11 +14,11 @@ class TestDocument(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		description: DF.Data | None
-		options: DF.Data | None
+		email: DF.Data | None
+		name1: DF.Data | None
+		parent: DF.Data
+		parentfield: DF.Data
+		parenttype: DF.Data
 	# end: auto-generated types
 
-	_DOCTYPE_NAME = "Test Document"
-	def before_save(self):
-		if not self.description:
-			self.description = "Default description"
+	_DOCTYPE_NAME = "Child table"
