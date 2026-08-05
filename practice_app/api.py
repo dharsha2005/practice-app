@@ -1,5 +1,6 @@
 import frappe
 from frappe.query_builder import DocType
+from frappe.utils import now
 
 def custom_logic(doc, method):
     frappe.msgprint("Hook executed!")
@@ -32,3 +33,23 @@ def assignment_api():
         )
         frappe.db.commit()
     return query.run(as_dict=True)
+
+@frappe.whitelist()
+def get_recent_todos():
+    todos = frappe.get_list(
+        "ToDo",
+        fields = ["name","description","owner"],
+        order_by= "modified desc",
+        limit= 5    
+    )
+    for todo in todos:
+        email = frappe.db.get_value(
+            "User",
+            todo['owner'],
+            "email"
+        )
+        todo['email'] = email
+    return{
+        'timestamp':now(),
+        'records': todos
+    }
