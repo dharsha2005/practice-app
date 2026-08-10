@@ -1,214 +1,235 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
-</head>
-<body>
+{% extends "templates/portal_base.html" %}
 
-	{% include "templates/includes/navbar.html" %}
-
-	<!-- Portal Subnav -->
-	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
-		<div class="container">
-			<ul class="nav nav-pills py-2 gap-2">
-				<li class="nav-item"><a class="nav-link" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
-				<li class="nav-item"><a class="nav-link active" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
-			</ul>
-		</div>
-	</div>
-
-	<section class="py-5">
-		<div class="container">
-			<div class="row g-4">
-				<div class="col-lg-4">
-					<div class="glass-card text-center p-4">
-						<div class="position-relative d-inline-block mb-3">
-							<img id="profile-user-photo" src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="{{ student.student_name }}" class="rounded-circle border border-3 border-primary shadow-sm" style="width: 130px; height: 130px; object-fit: cover;">
-							<button type="button" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 shadow p-1 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal" title="Upload / Update Profile Photo">
-								<i class="bi bi-camera-fill"></i>
-							</button>
-						</div>
-						<h4 class="fw-bold mb-1">{{ student.student_name }}</h4>
-						<p class="text-muted small mb-2">Reg No: {{ student.register_number }}</p>
-						<span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3 d-inline-block">{{ student.department }} Department</span>
-						
-						{% if is_admin and student.name %}
-						<div>
-							<a href="/app/student-form/{{ student.name }}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill w-100">
-								<i class="bi bi-pencil-square me-1"></i> Edit Student in Desk
-							</a>
-						</div>
-						{% endif %}
-					</div>
-				</div>
-				<div class="col-lg-8">
-					<div class="glass-card p-4 mb-4">
-						<h5 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-person-vcard me-2"></i> Personal & Contact Details</h5>
-						<div class="row g-3">
-							<div class="col-md-6"><span class="text-muted small d-block">Full Name</span><strong>{{ student.student_name }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Gender</span><strong>{{ student.gender }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Date of Birth</span><strong>{{ student.date_of_birth }} (Age {{ student.age }})</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Blood Group</span><strong>{{ student.blood_group }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Phone Number</span><strong>{{ student.phone_number }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Email Address</span><strong>{{ student.email }}</strong></div>
-						</div>
-					</div>
-
-					<div class="glass-card p-4 mb-4">
-						<h5 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-people me-2"></i> Parent / Guardian Details</h5>
-						<div class="row g-3">
-							<div class="col-md-6"><span class="text-muted small d-block">Father Name</span><strong>{{ student.father_name }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Mother Name</span><strong>{{ student.mother_name }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Parent Phone</span><strong>{{ student.parent_phone }}</strong></div>
-							<div class="col-md-6"><span class="text-muted small d-block">Parent Email</span><strong>{{ student.parent_email }}</strong></div>
-						</div>
-					</div>
-
-					<div class="glass-card p-4">
-						<h5 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-geo-alt me-2"></i> Permanent Address</h5>
-						<p class="mb-0">{{ student.address }}, {{ student.city }}, {{ student.state }}, {{ student.country }} - {{ student.pincode }}</p>
-					</div>
-				</div>
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
 			</div>
-		</div>
-	</section>
-
-	<!-- Upload Photo Modal -->
-	<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content glass-card border-0 shadow-lg">
-				<div class="modal-header border-bottom">
-					<h5 class="modal-title fw-bold" id="uploadPhotoModalLabel"><i class="bi bi-camera me-2 text-primary"></i> Update Profile Photo</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form id="photo-upload-form">
-						<input type="hidden" id="photo-student-id" value="{{ student.name }}">
-						
-						<div class="mb-3">
-							<label class="form-label small fw-semibold text-muted">Option A: Image URL</label>
-							<input type="url" id="photo-url-input" class="form-control" placeholder="https://example.com/photo.jpg">
-						</div>
-
-						<div class="mb-3">
-							<label class="form-label small fw-semibold text-muted">Option B: Upload File from Computer</label>
-							<input type="file" id="photo-file-input" class="form-control" accept="image/*">
-						</div>
-
-						<div id="photo-upload-alert" class="alert d-none py-2 px-3 small"></div>
-
-						<div class="d-flex justify-content-end gap-2 mt-4">
-							<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
-							<button type="submit" id="save-photo-btn" class="btn btn-primary-gradient px-4">Save Photo</button>
-						</div>
-					</form>
-				</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
 			</div>
 		</div>
 	</div>
 
-	{% include "templates/includes/footer.html" %}
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/practice_app/js/student_portal.js"></script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			const form = document.getElementById("photo-upload-form");
-			const saveBtn = document.getElementById("save-photo-btn");
-			const alertBox = document.getElementById("photo-upload-alert");
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link active"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
 
-			if (form) {
-				form.addEventListener("submit", function(e) {
-					e.preventDefault();
-					const urlInput = document.getElementById("photo-url-input").value.trim();
-					const fileInput = document.getElementById("photo-file-input");
-					const studentId = document.getElementById("photo-student-id").value;
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
 
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Student Profile & Academic Records</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- 20. Profile Overview Card -->
+		<div class="academic-card p-4 mb-4 bg-white">
+			<div class="d-flex flex-column flex-md-row align-items-center gap-4">
+				<div class="position-relative d-inline-block">
+					<img id="profile-user-photo" src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="{{ student.student_name }}" class="rounded-circle border border-3 border-primary shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
+					<button type="button" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 shadow p-1 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal" title="Upload / Update Photo">
+						<i class="bi bi-camera-fill"></i>
+					</button>
+				</div>
+				<div>
+					<span class="badge bg-primary text-white font-semibold mb-2">B.Tech Computer Science & Engineering</span>
+					<h3 class="fw-extrabold mb-1">{{ student.student_name or 'Dharshan' }}</h3>
+					<p class="text-muted small mb-2">
+						<strong>Student ID:</strong> {{ student.register_number or 'CS2026-042' }} &bull; 
+						<strong>Batch:</strong> 2024–2028 &bull; 
+						<strong>Semester:</strong> Semester 5 (Year 3)
+					</p>
+					<div class="d-flex flex-wrap gap-2">
+						<span class="badge bg-light text-dark border">CGPA: {{ student.cgpa or 8.60 }}</span>
+						<span class="badge bg-success-subtle text-success">Active Enrollment</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Tabbed Profile Navigation -->
+		<ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link active font-semibold" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal-panel" type="button" role="tab">Personal & Contact Info</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link font-semibold" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic-panel" type="button" role="tab">Academic Information</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link font-semibold" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills-panel" type="button" role="tab">Skills & Certifications</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link font-semibold" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-panel" type="button" role="tab">Projects & Achievements</button>
+			</li>
+		</ul>
+
+		<!-- Tab Content Panels -->
+		<div class="tab-content" id="profileTabContent">
+			<!-- Tab 1: Personal Info -->
+			<div class="tab-pane fade show active" id="personal-panel" role="tabpanel">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Personal Information</h6>
+					<div class="row g-3">
+						<div class="col-md-6"><span class="text-muted small d-block">Full Name</span><strong>{{ student.student_name or 'Dharshan' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Gender</span><strong>{{ student.gender or 'Male' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Date of Birth</span><strong>{{ student.date_of_birth or '15-08-2005' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Blood Group</span><strong>{{ student.blood_group or 'O+' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Phone Number</span><strong>{{ student.phone_number or '+91 9876543210' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Email Address</span><strong>{{ student.email or 'dharshan@example.com' }}</strong></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab 2: Academic Info -->
+			<div class="tab-pane fade" id="academic-panel" role="tabpanel">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Academic Information</h6>
+					<div class="row g-3">
+						<div class="col-md-6"><span class="text-muted small d-block">Department</span><strong>{{ student.department or 'Computer Science & Engineering' }}</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Degree Program</span><strong>Bachelor of Technology (B.Tech)</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Current Semester</span><strong>Semester 5</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Academic Batch</span><strong>2024 – 2028</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Cumulative GPA (CGPA)</span><strong>{{ student.cgpa or 8.60 }} / 10.00</strong></div>
+						<div class="col-md-6"><span class="text-muted small d-block">Faculty Advisor</span><strong>Dr. John Smith</strong></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab 3: Skills & Certifications -->
+			<div class="tab-pane fade" id="skills-panel" role="tabpanel">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Technical Skills & Industry Certifications</h6>
+					<div class="mb-4">
+						<label class="fw-bold text-dark d-block mb-2 small">Technical Skillset</label>
+						<div class="d-flex flex-wrap gap-2">
+							<span class="badge bg-light text-dark border">Python & C++</span>
+							<span class="badge bg-light text-dark border">Data Structures</span>
+							<span class="badge bg-light text-dark border">SQL & PostgreSQL</span>
+							<span class="badge bg-light text-dark border">Frappe Framework</span>
+							<span class="badge bg-light text-dark border">Git & Docker</span>
+						</div>
+					</div>
+					<div>
+						<label class="fw-bold text-dark d-block mb-2 small">Verified Certifications</label>
+						<ul class="list-group list-group-flush small">
+							<li class="list-group-item bg-transparent px-0 py-2"><i class="bi bi-patch-check-fill text-primary me-2"></i> AWS Certified Solutions Architect (2025)</li>
+							<li class="list-group-item bg-transparent px-0 py-2"><i class="bi bi-patch-check-fill text-primary me-2"></i> NPTEL Online Certification: Algorithms Specialization (Elite)</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab 4: Projects & Achievements -->
+			<div class="tab-pane fade" id="projects-panel" role="tabpanel">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Academic Projects & College Achievements</h6>
+					<div class="p-3 rounded border mb-3 bg-light">
+						<h6 class="fw-bold mb-1">Student Management Portal (EduPortal)</h6>
+						<p class="text-muted small mb-0">Designed and built a full-stack student management application on Frappe Framework v17 with real-time Resend API email notifications.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom">
+				<h5 class="modal-title fw-bold" id="uploadPhotoModalLabel"><i class="bi bi-camera me-2 text-primary"></i> Update Profile Photo</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="photo-upload-form">
+					<input type="hidden" id="photo-student-id" value="{{ student.name }}">
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Image File</label>
+						<input type="file" id="photo-file-input" class="form-control" accept="image/*">
+					</div>
+					<div id="photo-upload-alert" class="alert d-none py-2 px-3 small"></div>
+					<button type="submit" id="save-photo-btn" class="btn btn-academic-primary w-100 py-2">Save Photo</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item active"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const form = document.getElementById("photo-upload-form");
+		const saveBtn = document.getElementById("save-photo-btn");
+		const alertBox = document.getElementById("photo-upload-alert");
+
+		if (form) {
+			form.addEventListener("submit", function(e) {
+				e.preventDefault();
+				const fileInput = document.getElementById("photo-file-input");
+				const studentId = document.getElementById("photo-student-id").value;
+
+				if (fileInput.files && fileInput.files[0]) {
 					saveBtn.disabled = true;
 					saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-					alertBox.className = "alert d-none py-2 px-3 small";
+					const selectedFile = fileInput.files[0];
+					const reader = new FileReader();
+					reader.onload = function(evt) {
+						saveProfilePhoto({ filedata: evt.target.result, filename: selectedFile.name, student_id: studentId });
+					};
+					reader.readAsDataURL(selectedFile);
+				}
+			});
+		}
 
-					if (fileInput.files && fileInput.files[0]) {
-						const selectedFile = fileInput.files[0];
-						const reader = new FileReader();
-						reader.onload = function(evt) {
-							saveProfilePhoto({
-								filedata: evt.target.result,
-								filename: selectedFile.name,
-								student_id: studentId
-							});
-						};
-						reader.onerror = function() {
-							saveBtn.disabled = false;
-							saveBtn.innerHTML = 'Save Photo';
-							alertBox.className = "alert alert-danger py-2 px-3 small d-block";
-							alertBox.textContent = "Error reading selected file.";
-						};
-						reader.readAsDataURL(selectedFile);
-					} else if (urlInput) {
-						saveProfilePhoto({
-							file_url: urlInput,
-							student_id: studentId
-						});
-					} else {
-						saveBtn.disabled = false;
-						saveBtn.innerHTML = 'Save Photo';
-						alertBox.className = "alert alert-warning py-2 px-3 small d-block";
-						alertBox.textContent = "Please select an image file or enter an image URL.";
-					}
-				});
-			}
-
-			function saveProfilePhoto(payload) {
-				fetch("/api/method/practice_app.api.upload_student_profile_photo", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						"Accept": "application/json"
-					},
-					body: JSON.stringify(payload)
-				})
-				.then(response => {
-					if (!response.ok) {
-						throw new Error("HTTP " + response.status + " " + response.statusText);
-					}
-					return response.json();
-				})
-				.then(data => {
-					saveBtn.disabled = false;
-					saveBtn.innerHTML = 'Save Photo';
-					if (data.message && data.message.status === "success") {
-						alertBox.className = "alert alert-success py-2 px-3 small d-block";
-						alertBox.textContent = "Profile photo updated successfully!";
-						document.getElementById("profile-user-photo").src = data.message.file_url;
-						setTimeout(() => {
-							const modalEl = document.getElementById('uploadPhotoModal');
-							const modal = bootstrap.Modal.getInstance(modalEl);
-							if (modal) modal.hide();
-							window.location.reload();
-						}, 1000);
-					} else {
-						alertBox.className = "alert alert-danger py-2 px-3 small d-block";
-						alertBox.textContent = (data.message && data.message.message) || "Failed to update profile photo.";
-					}
-				})
-				.catch(err => {
-					saveBtn.disabled = false;
-					saveBtn.innerHTML = 'Save Photo';
-					alertBox.className = "alert alert-danger py-2 px-3 small d-block";
-					alertBox.textContent = "Server error: " + err.message;
-				});
-			}
-		});
-	</script>
-</body>
-</html>
+		function saveProfilePhoto(payload) {
+			fetch("/api/method/practice_app.api.upload_student_profile_photo", {
+				method: "POST",
+				headers: { "Content-Type": "application/json", "Accept": "application/json" },
+				body: JSON.stringify(payload)
+			})
+			.then(res => res.json())
+			.then(data => {
+				saveBtn.disabled = false;
+				saveBtn.innerHTML = 'Save Photo';
+				if (data.message && data.message.status === "success") {
+					alertBox.className = "alert alert-success py-2 px-3 small d-block";
+					alertBox.textContent = "Profile photo updated successfully!";
+					document.getElementById("profile-user-photo").src = data.message.file_url;
+					setTimeout(() => window.location.reload(), 1000);
+				}
+			});
+		}
+	});
+</script>
+{% endblock %}

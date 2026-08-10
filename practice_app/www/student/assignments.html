@@ -1,0 +1,298 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link active"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Assignment Management</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+			<div>
+				<h4 class="fw-extrabold mb-1">Course Submissions &amp; Assignments</h4>
+				<p class="text-muted small mb-0">Track due dates, upload solution files, and view faculty feedback.</p>
+			</div>
+
+			<!-- Working Interactive Status Filters -->
+			<div class="d-flex flex-wrap gap-2" id="assignmentFilterGroup">
+				<button class="btn btn-academic-navy btn-sm px-3 filter-btn active" data-filter="all">All ({{ total_count }})</button>
+				<button class="btn btn-academic-outline btn-sm px-3 filter-btn" data-filter="Pending">Pending ({{ pending_count }})</button>
+				<button class="btn btn-academic-outline btn-sm px-3 filter-btn" data-filter="Submitted">Submitted ({{ submitted_count }})</button>
+				<button class="btn btn-academic-outline btn-sm px-3 filter-btn" data-filter="Graded">Graded ({{ graded_count }})</button>
+			</div>
+		</div>
+
+		<!-- Assignment Cards & Table -->
+		<div class="academic-card p-4 bg-white">
+			<div class="table-responsive">
+				<table class="table align-middle" id="assignmentTable">
+					<thead>
+						<tr>
+							<th>Assignment Title</th>
+							<th>Subject</th>
+							<th>Department</th>
+							<th>Due Date</th>
+							<th>Status</th>
+							<th>Grade</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for assg in assignments %}
+						<tr class="assignment-row" data-status="{{ assg.status }}">
+							<td>
+								<strong class="d-block text-dark">{{ assg.title }}</strong>
+								{% if assg.attachment %}
+								<small class="text-muted"><a href="{{ assg.attachment }}" target="_blank" class="text-primary text-decoration-none"><i class="bi bi-paperclip me-1"></i> Attachment</a></small>
+								{% endif %}
+							</td>
+							<td><span class="badge bg-light text-dark border">{{ assg.subject }}</span></td>
+							<td class="small text-muted">{{ assg.department }}</td>
+							<td>
+								{% if assg.status == 'Pending' %}
+								<span class="text-danger font-semibold"><i class="bi bi-clock me-1"></i> {{ assg.due_date }}</span>
+								{% else %}
+								<span class="text-muted">{{ assg.due_date }}</span>
+								{% endif %}
+							</td>
+							<td><span class="badge {{ assg.badge_class }}">{{ assg.status }}</span></td>
+							<td><strong class="{{ 'text-success' if 'Graded' == assg.status else 'text-dark' }}">{{ assg.grade }}</strong></td>
+							<td>
+								{% if assg.status == 'Pending' %}
+								<button class="btn btn-academic-primary btn-sm open-submit-modal-btn" data-title="{{ assg.title }}" data-name="{{ assg.name }}">Submit Solution</button>
+								{% elif assg.status == 'Graded' %}
+								<button class="btn btn-academic-outline btn-sm" onclick="alert('Faculty Feedback: Assignment has been graded. Please contact faculty for detailed feedback.')">View Feedback</button>
+								{% elif assg.status == 'Late' %}
+								<span class="badge bg-danger-subtle text-danger small">Overdue</span>
+								{% else %}
+								<button class="btn btn-academic-outline btn-sm" onclick="alert('Submission received — under review by Department Faculty.')">View Details</button>
+								{% endif %}
+							</td>
+						</tr>
+						{% else %}
+						<tr>
+							<td colspan="7" class="text-center text-muted py-5">
+								<i class="bi bi-inbox fs-2 d-block mb-2"></i>
+								No assignments found for your department. Check back later.
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Upload Assignment Modal -->
+<div class="modal fade" id="submitAssignmentModal" tabindex="-1" aria-labelledby="submitAssignmentModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom bg-primary text-white">
+				<h5 class="modal-title fw-bold" id="submitAssignmentModalLabel"><i class="bi bi-upload me-2"></i> Submit Assignment Solution</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="assignment-submit-form">
+					<input type="hidden" id="modal-assignment-id">
+					<div class="mb-3">
+						<label class="form-label font-semibold text-muted small">Assignment Title</label>
+						<input type="text" id="modal-assignment-title" class="form-control bg-light" readonly>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label font-semibold text-muted small">Solution File (PDF / ZIP / Code)</label>
+						<input type="file" id="modal-assignment-file" class="form-control" accept=".pdf,.zip,.py,.java,.c,.cpp,.doc,.docx">
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label font-semibold text-muted small">Submission Comments (Optional)</label>
+						<textarea id="modal-assignment-comments" class="form-control" rows="3" placeholder="Enter any notes for the professor..."></textarea>
+					</div>
+
+					<div id="submit-alert" class="alert d-none py-2 px-3 small"></div>
+
+					<button type="submit" id="confirm-submit-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold">Submit Assignment</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	// 1. Working Assignment Category Filter
+	const filterBtns = document.querySelectorAll("#assignmentFilterGroup .filter-btn");
+	const rows = document.querySelectorAll("#assignmentTable .assignment-row");
+
+	filterBtns.forEach(btn => {
+		btn.addEventListener("click", function() {
+			filterBtns.forEach(b => {
+				b.classList.remove("btn-academic-navy", "active");
+				b.classList.add("btn-academic-outline");
+			});
+			this.classList.remove("btn-academic-outline");
+			this.classList.add("btn-academic-navy", "active");
+
+			const filter = this.getAttribute("data-filter");
+			rows.forEach(row => {
+				const rowStatus = row.getAttribute("data-status");
+				if (filter === "all" || rowStatus === filter || (filter === "Submitted" && rowStatus === "Late")) {
+					row.style.display = "";
+				} else {
+					row.style.display = "none";
+				}
+			});
+		});
+	});
+
+	// 2. Submit Solution Modal Trigger
+	const openModalBtns = document.querySelectorAll(".open-submit-modal-btn");
+	const submitModal = new bootstrap.Modal(document.getElementById("submitAssignmentModal"));
+
+	openModalBtns.forEach(btn => {
+		btn.addEventListener("click", function() {
+			const title = this.getAttribute("data-title");
+			const id = this.getAttribute("data-name");
+			document.getElementById("modal-assignment-title").value = title;
+			document.getElementById("modal-assignment-id").value = id;
+			document.getElementById("modal-assignment-file").value = "";
+			document.getElementById("modal-assignment-comments").value = "";
+			document.getElementById("submit-alert").className = "alert d-none py-2 px-3 small";
+			submitModal.show();
+		});
+	});
+
+	// 3. REAL Solution Form Submit Handler — uploads file then calls submit_assignment API
+	const submitForm = document.getElementById("assignment-submit-form");
+	if (submitForm) {
+		submitForm.addEventListener("submit", async function(e) {
+			e.preventDefault();
+			const confirmBtn = document.getElementById("confirm-submit-btn");
+			const alertBox = document.getElementById("submit-alert");
+			const assignmentName = document.getElementById("modal-assignment-id").value;
+			const comments = document.getElementById("modal-assignment-comments").value;
+			const fileInput = document.getElementById("modal-assignment-file");
+
+			confirmBtn.disabled = true;
+			confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading Solution...';
+			alertBox.className = "alert d-none py-2 px-3 small";
+
+			try {
+				let fileUrl = "";
+
+				// Step 1: Upload file to Frappe Files if a file was selected
+				if (fileInput.files && fileInput.files[0]) {
+					const file = fileInput.files[0];
+					const formData = new FormData();
+					formData.append("file", file, file.name);
+					formData.append("is_private", "0");
+					formData.append("doctype", "Assignment Submission");
+					formData.append("docfield", "submitted_file");
+
+					const uploadResp = await fetch("/api/method/upload_file", {
+						method: "POST",
+						headers: {
+							"X-Frappe-CSRF-Token": getCsrfToken()
+						},
+						body: formData
+					});
+					const uploadData = await uploadResp.json();
+					if (uploadData.message && uploadData.message.file_url) {
+						fileUrl = uploadData.message.file_url;
+					}
+				}
+
+				// Step 2: Create Assignment Submission record in DocType
+				const resp = await fetch("/api/method/practice_app.api.submit_assignment", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-Frappe-CSRF-Token": getCsrfToken()
+					},
+					body: JSON.stringify({
+						assignment_name: assignmentName,
+						comments: comments,
+						submitted_file: fileUrl
+					})
+				});
+				const data = await resp.json();
+				const result = data.message || data;
+
+				if (result.status === "success" || result.status === "already_submitted") {
+					alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+					alertBox.textContent = result.message || "Assignment submitted successfully!";
+					setTimeout(() => {
+						submitModal.hide();
+						window.location.reload();
+					}, 1400);
+				} else {
+					throw new Error(result.message || "Submission failed.");
+				}
+
+			} catch (err) {
+				confirmBtn.disabled = false;
+				confirmBtn.innerHTML = 'Submit Assignment';
+				alertBox.className = "alert alert-danger py-2 px-3 small d-block mb-3";
+				alertBox.textContent = "Error: " + (err.message || "Could not submit. Please try again.");
+			}
+		});
+	}
+
+	// Helper to read CSRF token safely
+	function getCsrfToken() {
+		if (window.frappe && window.frappe.csrf_token) {
+			return window.frappe.csrf_token;
+		}
+		const match = document.cookie.match(/csrf_token=([^;]+)/);
+		return match ? decodeURIComponent(match[1]) : "";
+	}
+});
+</script>
+{% endblock %}

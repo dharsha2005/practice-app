@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
+	<title>Academic Courses & Degree Curriculum | TIT Institute of Technology</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
@@ -12,31 +12,114 @@
 
 	{% include "templates/includes/navbar.html" %}
 
-	<section class="py-5 text-center bg-primary-subtle">
-		<div class="container">
-			<span class="badge bg-primary text-white px-3 py-2 rounded-pill mb-2">Degree Programs</span>
-			<h1 class="display-5 fw-bold">Undergraduate Courses</h1>
-			<p class="lead text-muted">Comprehensive 4-year Bachelor of Technology & Engineering curricula.</p>
+	<!-- Course Hero Banner -->
+	<section class="academic-hero py-5 text-white bg-navy position-relative">
+		<div class="container py-3">
+			<span class="hero-tag d-inline-block mb-3"><i class="bi bi-journal-bookmark me-1.5"></i> Academic Curriculum</span>
+			<h1 class="hero-title text-white fw-extrabold mb-3">Degree Courses & Academic Subjects</h1>
+			<p class="fs-5 text-light opacity-90 mb-0" style="max-width: 680px;">Explore comprehensive course syllabi, faculty instructions, credit structures, and digital laboratory manuals across engineering departments.</p>
 		</div>
 	</section>
 
-	<section class="py-5">
+	<!-- Course Search & Department Filters -->
+	<section class="py-4 bg-white border-bottom">
 		<div class="container">
-			<div class="row g-4">
-				{% for course in courses %}
-				<div class="col-lg-4 col-md-6">
-					<div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+			<div class="row g-3 align-items-center">
+				<div class="col-md-6">
+					<div class="input-group">
+						<span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+						<input type="text" id="publicCourseSearch" class="form-control border-start-0" placeholder="Search courses by title, subject code (e.g. CS301)...">
+					</div>
+				</div>
+				<div class="col-md-6 d-flex flex-wrap gap-2 justify-content-md-end" id="deptFilterGroup">
+					<button class="btn btn-academic-navy btn-sm px-3 dept-btn active" data-dept="all">All Departments</button>
+					<button class="btn btn-academic-outline btn-sm px-3 dept-btn" data-dept="Computer Science">Computer Science</button>
+					<button class="btn btn-academic-outline btn-sm px-3 dept-btn" data-dept="Electronics">Electronics</button>
+					<button class="btn btn-academic-outline btn-sm px-3 dept-btn" data-dept="Electrical">Electrical</button>
+					<button class="btn btn-academic-outline btn-sm px-3 dept-btn" data-dept="Mechanical">Mechanical</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Course Management Grid -->
+	<section class="py-5 bg-light">
+		<div class="container">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h4 class="fw-bold mb-1">Engineering Degree Curriculum</h4>
+					<p class="text-muted small mb-0">Undergraduate (B.Tech) & Postgraduate (M.Tech) Accredited Modules</p>
+				</div>
+				<a href="/student/admission" class="btn btn-academic-primary btn-sm"><i class="bi bi-file-earmark-text me-1"></i> Apply for Admission</a>
+			</div>
+
+			<div class="row g-4" id="publicCourseGrid">
+				{% for c in courses %}
+				<div class="col-lg-4 col-md-6 public-course-item" data-dept="{{ c.department }}" data-title="{{ c.course_name }} {{ c.name }}">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between bg-white shadow-sm">
 						<div>
-							<div class="d-flex justify-content-between align-items-center mb-3">
-								<span class="badge bg-primary-subtle text-primary fw-bold fs-6">{{ course.department }}</span>
-								<span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-mortarboard me-1"></i> {{ course.credits }} Credits</span>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">{{ c.name or c.course_code }}</span>
+								<span class="badge bg-light text-dark border"><i class="bi bi-award me-1"></i> {{ c.credits or 4 }} Credits</span>
 							</div>
-							<h4 class="fw-bold mb-3">{{ course.course_name }}</h4>
-							<p class="text-muted small mb-4">{{ course.description }}</p>
+							<h5 class="fw-bold mb-1 text-dark">{{ c.course_name }}</h5>
+							<p class="text-muted small mb-3"><i class="bi bi-building text-primary me-1"></i> Dept: <strong>{{ c.department }}</strong></p>
+							<p class="text-muted small mb-0">{{ c.description or 'Comprehensive engineering subject covering theoretical fundamentals and practical laboratory experiments.' }}</p>
 						</div>
-						<div class="pt-3 border-top d-flex justify-content-between align-items-center">
-							<span class="text-muted small"><i class="bi bi-calendar-range me-1"></i> {{ course.duration_years }} Years</span>
-							<a href="/contact" class="btn btn-sm btn-primary-gradient px-3">Enquire</a>
+						<div class="pt-3 mt-3 border-top">
+							<button class="btn btn-academic-navy w-100 py-2 btn-sm open-course-modal" data-title="{{ c.course_name }}" data-code="{{ c.name }}" data-credits="{{ c.credits or 4 }}" data-dept="{{ c.department }}" data-desc="{{ c.description }}">View Course Details</button>
+						</div>
+					</div>
+				</div>
+				{% else %}
+				<!-- Fallback Cards -->
+				<div class="col-lg-4 col-md-6 public-course-item" data-dept="Computer Science" data-title="Data Structures & Algorithms CS301">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between bg-white shadow-sm">
+						<div>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">CS301</span>
+								<span class="badge bg-light text-dark border"><i class="bi bi-award me-1"></i> 4 Credits</span>
+							</div>
+							<h5 class="fw-bold mb-1 text-dark">Data Structures & Algorithms</h5>
+							<p class="text-muted small mb-3"><i class="bi bi-building text-primary me-1"></i> Dept: <strong>Computer Science & Engineering</strong></p>
+							<p class="text-muted small">Comprehensive study of arrays, linked lists, binary search trees, graph algorithms, and asymptotic complexity analysis.</p>
+						</div>
+						<div class="pt-3 mt-3 border-top">
+							<button class="btn btn-academic-navy w-100 py-2 btn-sm open-course-modal" data-title="Data Structures & Algorithms" data-code="CS301" data-credits="4" data-dept="Computer Science & Engineering" data-desc="Comprehensive study of arrays, linked lists, binary search trees, graph algorithms, and asymptotic complexity analysis.">View Course Details</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-4 col-md-6 public-course-item" data-dept="Computer Science" data-title="Database Management Systems CS302">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between bg-white shadow-sm">
+						<div>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">CS302</span>
+								<span class="badge bg-light text-dark border"><i class="bi bi-award me-1"></i> 4 Credits</span>
+							</div>
+							<h5 class="fw-bold mb-1 text-dark">Database Management Systems</h5>
+							<p class="text-muted small mb-3"><i class="bi bi-building text-primary me-1"></i> Dept: <strong>Computer Science & Engineering</strong></p>
+							<p class="text-muted small">Relational database algebra, SQL querying, E-R modeling, normalization, transaction processing, and ACID properties.</p>
+						</div>
+						<div class="pt-3 mt-3 border-top">
+							<button class="btn btn-academic-navy w-100 py-2 btn-sm open-course-modal" data-title="Database Management Systems" data-code="CS302" data-credits="4" data-dept="Computer Science & Engineering" data-desc="Relational database algebra, SQL querying, E-R modeling, normalization, transaction processing, and ACID properties.">View Course Details</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-4 col-md-6 public-course-item" data-dept="Computer Science" data-title="Operating Systems CS303">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between bg-white shadow-sm">
+						<div>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">CS303</span>
+								<span class="badge bg-light text-dark border"><i class="bi bi-award me-1"></i> 4 Credits</span>
+							</div>
+							<h5 class="fw-bold mb-1 text-dark">Operating Systems</h5>
+							<p class="text-muted small mb-3"><i class="bi bi-building text-primary me-1"></i> Dept: <strong>Computer Science & Engineering</strong></p>
+							<p class="text-muted small">Process synchronization, CPU scheduling algorithms, virtual memory paging, deadlock prevention, and POSIX file systems.</p>
+						</div>
+						<div class="pt-3 mt-3 border-top">
+							<button class="btn btn-academic-navy w-100 py-2 btn-sm open-course-modal" data-title="Operating Systems" data-code="CS303" data-credits="4" data-dept="Computer Science & Engineering" data-desc="Process synchronization, CPU scheduling algorithms, virtual memory paging, deadlock prevention, and POSIX file systems.">View Course Details</button>
 						</div>
 					</div>
 				</div>
@@ -45,9 +128,100 @@
 		</div>
 	</section>
 
+	<!-- Course Detail Modal -->
+	<div class="modal fade" id="publicCourseDetailModal" tabindex="-1" aria-labelledby="publicCourseDetailModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg">
+				<div class="modal-header bg-navy text-white">
+					<div>
+						<h5 class="modal-title fw-bold" id="modal-course-title">Course Details</h5>
+						<small class="text-white-50" id="modal-course-subtitle">4 Credits</small>
+					</div>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body p-4">
+					<p class="text-muted" id="modal-course-desc">Detailed syllabus content.</p>
+					<div class="p-3 bg-light rounded border mb-3">
+						<h6><i class="bi bi-journal-check text-primary me-2"></i> Key Learning Modules</h6>
+						<ul class="mb-0 small text-muted">
+							<li>Module 1: Fundamental Concepts & Theoretical Foundation</li>
+							<li>Module 2: Practical Implementation & Algorithmic Problem Solving</li>
+							<li>Module 3: Advanced Optimization & Industry Case Studies</li>
+						</ul>
+					</div>
+				</div>
+				<div class="modal-footer bg-light border-top">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+					<a href="/login" class="btn btn-academic-primary btn-sm">Enroll via Student Portal</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	{% include "templates/includes/footer.html" %}
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/practice_app/js/student_portal.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const searchInput = document.getElementById("publicCourseSearch");
+			const items = document.querySelectorAll(".public-course-item");
+			const deptBtns = document.querySelectorAll("#deptFilterGroup .dept-btn");
+			let currentDept = "all";
+
+			function filterCourses() {
+				const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+				items.forEach(item => {
+					const dept = item.getAttribute("data-dept") || "";
+					const title = item.getAttribute("data-title") || "";
+
+					const matchesDept = (currentDept === "all" || dept.toLowerCase().includes(currentDept.toLowerCase()));
+					const matchesQuery = (!query || title.toLowerCase().includes(query));
+
+					if (matchesDept && matchesQuery) {
+						item.style.display = "";
+					} else {
+						item.style.display = "none";
+					}
+				});
+			}
+
+			if (searchInput) {
+				searchInput.addEventListener("input", filterCourses);
+			}
+
+			deptBtns.forEach(btn => {
+				btn.addEventListener("click", function() {
+					deptBtns.forEach(b => {
+						b.classList.remove("btn-academic-navy", "active");
+						b.classList.add("btn-academic-outline");
+					});
+					this.classList.remove("btn-academic-outline");
+					this.classList.add("btn-academic-navy", "active");
+
+					currentDept = this.getAttribute("data-dept");
+					filterCourses();
+				});
+			});
+
+			const modal = new bootstrap.Modal(document.getElementById("publicCourseDetailModal"));
+			const openBtns = document.querySelectorAll(".open-course-modal");
+
+			openBtns.forEach(btn => {
+				btn.addEventListener("click", function() {
+					const title = this.getAttribute("data-title");
+					const code = this.getAttribute("data-code");
+					const credits = this.getAttribute("data-credits");
+					const dept = this.getAttribute("data-dept");
+					const desc = this.getAttribute("data-desc");
+
+					document.getElementById("modal-course-title").textContent = title + " (" + code + ")";
+					document.getElementById("modal-course-subtitle").textContent = credits + " Credits • Department: " + dept;
+					document.getElementById("modal-course-desc").textContent = desc;
+
+					modal.show();
+				});
+			});
+		});
+	</script>
 </body>
 </html>

@@ -1,0 +1,285 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+
+		<div class="sidebar-group-title">SERVICES</div>
+		<a href="/student/certificates" class="sidebar-link"><i class="bi bi-award-fill"></i> Certificates</a>
+		<a href="/student/leave" class="sidebar-link active"><i class="bi bi-calendar-minus"></i> Leave Application</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Leave Application Portal</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Stats Row -->
+		<div class="row g-3 mb-4">
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center">
+					<div class="stat-number text-primary fs-2">{{ total_count }}</div>
+					<small class="text-muted fw-semibold">Total Applied</small>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center">
+					<div class="stat-number text-warning fs-2">{{ pending_count }}</div>
+					<small class="text-muted fw-semibold">Pending</small>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center">
+					<div class="stat-number text-success fs-2">{{ approved_count }}</div>
+					<small class="text-muted fw-semibold">Approved</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<div>
+				<h4 class="fw-extrabold mb-1">Academic Leave Applications</h4>
+				<p class="text-muted small mb-0">Apply for medical, duty or personal leave. Faculty approval required.</p>
+			</div>
+			<button class="btn btn-academic-primary btn-sm" data-bs-toggle="modal" data-bs-target="#applyLeaveModal">
+				<i class="bi bi-plus-lg me-1"></i> Apply for Leave
+			</button>
+		</div>
+
+		<div class="academic-card p-4 bg-white">
+			<div class="table-responsive">
+				<table class="table align-middle">
+					<thead>
+						<tr>
+							<th>Leave Type</th>
+							<th>From Date</th>
+							<th>To Date</th>
+							<th>Days</th>
+							<th>Reason</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for leave in leave_list %}
+						<tr>
+							<td><strong class="text-dark">{{ leave.leave_type }}</strong></td>
+							<td>{{ leave.from_date }}</td>
+							<td>{{ leave.to_date }}</td>
+							<td><span class="badge bg-light text-dark border">{{ leave.no_of_days or 1 }} day(s)</span></td>
+							<td class="small text-muted" style="max-width: 200px;">{{ (leave.reason or '')[:80] }}{% if (leave.reason or '') | length > 80 %}...{% endif %}</td>
+							<td><span class="badge {{ leave.badge_class }}">{{ leave.status }}</span></td>
+							<td>
+								{% if leave.status == 'Pending' %}
+								<button class="btn btn-outline-danger btn-sm cancel-leave-btn" data-id="{{ leave.name }}">Cancel</button>
+								{% elif leave.status == 'Approved' %}
+								<span class="text-success small"><i class="bi bi-check-circle-fill me-1"></i>Approved</span>
+								{% else %}
+								<span class="text-muted small">{{ leave.status }}</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% else %}
+						<tr>
+							<td colspan="7" class="text-center text-muted py-5">
+								<i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+								No leave applications submitted yet. Click "Apply for Leave" to submit one.
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Apply Leave Modal -->
+<div class="modal fade" id="applyLeaveModal" tabindex="-1" aria-labelledby="applyLeaveModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom bg-primary text-white">
+				<h5 class="modal-title fw-bold" id="applyLeaveModalLabel"><i class="bi bi-calendar-plus me-2"></i> Submit Leave Request</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="leave-request-form">
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Leave Category</label>
+						<select class="form-select" id="leave-type" required>
+							{% for lt in leave_types %}
+							<option value="{{ lt }}">{{ lt }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="row g-3 mb-3">
+						<div class="col-6">
+							<label class="form-label small fw-semibold text-muted">From Date</label>
+							<input type="date" class="form-control" id="leave-from" required>
+						</div>
+						<div class="col-6">
+							<label class="form-label small fw-semibold text-muted">To Date</label>
+							<input type="date" class="form-control" id="leave-to" required>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Reason / Description</label>
+						<textarea class="form-control" id="leave-reason" rows="3" placeholder="Describe your reason for leave..." required></textarea>
+					</div>
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Supporting Document (Optional)</label>
+						<input type="file" class="form-control" id="leave-doc" accept=".pdf,.jpg,.jpeg,.png">
+					</div>
+					<div id="leave-alert" class="alert d-none py-2 px-3 small"></div>
+					<button type="submit" id="submit-leave-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold">Submit Leave Application</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	function getCsrfToken() {
+		const match = document.cookie.match(/csrf_token=([^;]+)/);
+		return match ? decodeURIComponent(match[1]) : "";
+	}
+
+	// Real leave submission via API
+	const form = document.getElementById("leave-request-form");
+	if (form) {
+		form.addEventListener("submit", async function(e) {
+			e.preventDefault();
+			const btn = document.getElementById("submit-leave-btn");
+			const alertBox = document.getElementById("leave-alert");
+			const leaveType = document.getElementById("leave-type").value;
+			const fromDate = document.getElementById("leave-from").value;
+			const toDate = document.getElementById("leave-to").value;
+			const reason = document.getElementById("leave-reason").value;
+			const docInput = document.getElementById("leave-doc");
+
+			btn.disabled = true;
+			btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+			alertBox.className = "alert d-none py-2 px-3 small";
+
+			try {
+				let docUrl = "";
+				// Upload supporting document if provided
+				if (docInput.files && docInput.files[0]) {
+					const file = docInput.files[0];
+					const fd = new FormData();
+					fd.append("file", file, file.name);
+					fd.append("is_private", "0");
+					const uploadResp = await fetch("/api/method/upload_file", {
+						method: "POST",
+						headers: { "X-Frappe-CSRF-Token": getCsrfToken() },
+						body: fd
+					});
+					const uploadData = await uploadResp.json();
+					if (uploadData.message && uploadData.message.file_url) {
+						docUrl = uploadData.message.file_url;
+					}
+				}
+
+				const resp = await fetch("/api/method/practice_app.api.submit_leave_application", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-Frappe-CSRF-Token": getCsrfToken()
+					},
+					body: JSON.stringify({
+						leave_type: leaveType,
+						from_date: fromDate,
+						to_date: toDate,
+						reason: reason,
+						supporting_document: docUrl
+					})
+				});
+				const data = await resp.json();
+				const result = data.message || data;
+
+				if (result.status === "success") {
+					alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+					alertBox.textContent = result.message || "Leave application submitted successfully!";
+					setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById("applyLeaveModal")).hide(); window.location.reload(); }, 1500);
+				} else {
+					throw new Error(result.message || "Submission failed.");
+				}
+			} catch (err) {
+				btn.disabled = false;
+				btn.innerHTML = "Submit Leave Application";
+				alertBox.className = "alert alert-danger py-2 px-3 small d-block mb-3";
+				alertBox.textContent = "Error: " + (err.message || "Please try again.");
+			}
+		});
+	}
+
+	// Cancel leave application
+	document.querySelectorAll(".cancel-leave-btn").forEach(btn => {
+		btn.addEventListener("click", async function() {
+			const leaveId = this.getAttribute("data-id");
+			if (!confirm("Are you sure you want to cancel this leave application?")) return;
+			try {
+				const resp = await fetch("/api/method/practice_app.api.cancel_leave_application", {
+					method: "POST",
+					headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": getCsrfToken() },
+					body: JSON.stringify({ leave_id: leaveId })
+				});
+				const data = await resp.json();
+				const result = data.message || data;
+				if (result.status === "success") {
+					alert("Leave application cancelled.");
+					window.location.reload();
+				} else {
+					alert("Error: " + (result.message || "Could not cancel."));
+				}
+			} catch (err) {
+				alert("Error: " + err.message);
+			}
+		});
+	});
+});
+</script>
+{% endblock %}

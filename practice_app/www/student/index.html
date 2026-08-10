@@ -1,140 +1,263 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
-</head>
-<body>
+{% extends "templates/portal_base.html" %}
 
-	{% include "templates/includes/navbar.html" %}
-
-	{% if student.is_admin_preview %}
-	<div class="bg-dark text-white py-2 px-3">
-		<div class="container d-flex justify-content-between align-items-center">
-			<span class="small"><i class="bi bi-shield-lock-fill text-warning me-2"></i> <strong>Admin Preview Mode:</strong> You are viewing the Student Portal UI. Standard admin logins direct straight to Frappe Desk.</span>
-			<a href="/app" class="btn btn-sm btn-light py-1 px-3 fw-bold"><i class="bi bi-speedometer2 me-1"></i> Switch to Desk</a>
+{% block content %}
+<!-- 10. Student Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
 		</div>
+		<button class="btn btn-sm btn-link text-muted d-lg-none p-0" onclick="document.getElementById('portalSidebar').classList.remove('show')"><i class="bi bi-x-lg fs-5"></i></button>
 	</div>
-	{% endif %}
 
-	<!-- Student Header Profile Banner -->
-	<section class="py-5 tech-header-banner text-white">
-		<div class="container position-relative" style="z-index: 2;">
-			<div class="d-flex flex-column flex-md-row align-items-center gap-4">
-				<div class="position-relative d-inline-block">
-					<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="{{ student.student_name }}" class="rounded-circle border border-3 border-info shadow-lg" style="width: 110px; height: 110px; object-fit: cover;">
-					{% if is_admin and student.name %}
-					<a href="/app/student-form/{{ student.name }}" target="_blank" class="btn btn-sm btn-info rounded-circle position-absolute bottom-0 end-0 shadow p-1 d-flex align-items-center justify-content-center text-white" style="width: 34px; height: 34px;" title="Upload/Change Photo in Desk">
-						<i class="bi bi-camera-fill"></i>
-					</a>
-					{% endif %}
+	<div class="py-2">
+		<a href="/student" class="sidebar-link active"><i class="bi bi-grid-fill"></i> Dashboard</a>
+
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+		<a href="/student/materials" class="sidebar-link"><i class="bi bi-folder-symlink"></i> Materials</a>
+
+		<div class="sidebar-group-title">SERVICES</div>
+		<a href="/student/leave" class="sidebar-link"><i class="bi bi-calendar-minus"></i> Leave Application</a>
+		<a href="/student/certificates" class="sidebar-link"><i class="bi bi-patch-check"></i> Certificates</a>
+		<a href="/contact" class="sidebar-link"><i class="bi bi-headset"></i> Support</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+		<a href="/student/settings" class="sidebar-link"><i class="bi bi-gear"></i> Settings</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<!-- Main Content Area -->
+<div class="portal-content-wrapper">
+	<!-- Portal Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Academic Student Dashboard</h5>
+		</div>
+
+		<div class="d-flex align-items-center gap-3">
+			<a href="/student/notifications" class="btn btn-light rounded-circle p-2 position-relative" title="Notifications" style="width: 40px; height: 40px;">
+				<i class="bi bi-bell text-muted"></i>
+				<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">New alerts</span></span>
+			</a>
+			<div class="d-flex align-items-center gap-2">
+				<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+				<div class="d-none d-md-block text-start">
+					<span class="fw-bold d-block leading-tight text-dark small">{{ student.student_name or 'Student' }}</span>
+					<small class="text-muted fs-7">{{ student.register_number or student.name }}</small>
 				</div>
-				<div class="text-center text-md-start">
-					<div class="d-inline-flex align-items-center gap-2 mb-2">
-						<span class="badge bg-cyan-subtle text-cyan fw-bold px-3 py-1.5 rounded-pill" style="background: rgba(6, 182, 212, 0.2); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.4);"><i class="bi bi-mortarboard-fill me-1"></i> Student Academic Portal</span>
-						<span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill"><span class="pulse-dot me-1"></span> Active Session</span>
+			</div>
+		</div>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- 9. Welcome Greeting Section -->
+		<div class="academic-card p-4 mb-4 bg-white border-left-navy" style="border-left: 4px solid var(--navy-primary);">
+			<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+				<div>
+					<span class="badge bg-primary-subtle text-primary font-semibold mb-2">Academic Year 2026–2027</span>
+					<h2 class="fw-extrabold mb-1">Good Morning, {{ student.student_name or 'Student' }} 👋</h2>
+					<p class="text-muted small mb-0">
+						<strong>Student ID:</strong> {{ student.register_number or student.name }} &bull; 
+						<strong>Dept:</strong> {{ student.department or 'N/A' }} &bull; 
+						<strong>Semester:</strong> {{ student.semester or 'Semester 1' }}
+					</p>
+				</div>
+				<div class="d-flex gap-2">
+					<a href="/student/attendance" class="btn btn-academic-outline btn-sm"><i class="bi bi-calendar-check me-1"></i> Attendance</a>
+					<a href="/student/marks" class="btn btn-academic-primary btn-sm"><i class="bi bi-award me-1"></i> View Results</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Dashboard Cards (Attendance %, CGPA, Enrolled Courses, Pending Assignments) -->
+		<div class="row g-4 mb-4">
+			<div class="col-xl-3 col-sm-6">
+				<div class="stat-box h-100 d-flex align-items-center justify-content-between bg-white p-4 border rounded">
+					<div>
+						<div class="stat-number text-success fw-bold fs-2">{{ attendance_pct }}%</div>
+						<div class="stat-label text-muted small fw-semibold">Attendance Rate</div>
+						<small class="text-success font-semibold fs-7"><i class="bi bi-check-circle me-1"></i> DocType Live</small>
 					</div>
-					<h1 class="fw-extrabold mb-1 tracking-tight display-6">{{ student.student_name }}</h1>
-					<div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start text-white-50 small mt-2">
-						<span><i class="bi bi-card-heading text-info me-1"></i> Reg: <strong class="text-white">{{ student.register_number }}</strong></span>
-						<span><i class="bi bi-building text-info me-1"></i> Dept: <strong class="text-white">{{ student.department }}</strong></span>
-						<span><i class="bi bi-journal-text text-info me-1"></i> Semester <strong class="text-white">{{ student.semester }}</strong> (Year {{ student.year }})</span>
+					<div class="circle-progress-wrapper" style="width: 65px; height: 65px;">
+						<svg class="circle-progress-svg" width="65" height="65" viewBox="0 0 36 36">
+							<path stroke="#e2e8f0" stroke-width="3.5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+							<path stroke="#10b981" stroke-width="3.5" stroke-dasharray="{{ attendance_pct }}, 100" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+						</svg>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-sm-6">
+				<div class="stat-box h-100 d-flex align-items-center justify-content-between bg-white p-4 border rounded">
+					<div>
+						<div class="stat-number text-primary fw-bold fs-2">{{ '%.2f'|format(student.cgpa) if student.cgpa else '0.00' }}</div>
+						<div class="stat-label text-muted small fw-semibold">Current CGPA</div>
+						<small class="text-muted font-semibold fs-7">Marks DocType</small>
+					</div>
+					<div class="brand-badge bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.35rem;">
+						<i class="bi bi-trophy"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-sm-6">
+				<div class="stat-box h-100 d-flex align-items-center justify-content-between bg-white p-4 border rounded">
+					<div>
+						<div class="stat-number text-dark fw-bold fs-2">{{ enrolled_courses_count }}</div>
+						<div class="stat-label text-muted small fw-semibold">Enrolled Courses</div>
+						<small class="text-muted font-semibold fs-7">{{ total_credits }} Total Credits</small>
+					</div>
+					<div class="brand-badge bg-navy text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.35rem;">
+						<i class="bi bi-journal-bookmark"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-sm-6">
+				<div class="stat-box h-100 d-flex align-items-center justify-content-between bg-white p-4 border rounded">
+					<div>
+						<div class="stat-number text-warning fw-bold fs-2">{{ pending_assignments_count }}</div>
+						<div class="stat-label text-muted small fw-semibold">Pending Assignments</div>
+						<small class="text-warning font-semibold fs-7"><i class="bi bi-clock me-1"></i> Due Soon</small>
+					</div>
+					<div class="brand-badge bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.35rem;">
+						<i class="bi bi-file-earmark-text"></i>
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
 
-	<!-- Portal Subnav -->
-	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
-		<div class="container">
-			<ul class="nav nav-pills py-2 gap-2">
-				<li class="nav-item"><a class="nav-link active" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
-			</ul>
-		</div>
-	</div>
-
-	<!-- Dashboard Body -->
-	<section class="py-5">
-		<div class="container">
-			<!-- Metrics Row -->
-			<div class="row g-4 mb-5">
-				<div class="col-lg-3 col-6">
-					<div class="glass-card p-4 text-center">
-						<div class="stat-icon bg-success-subtle text-success mx-auto mb-2"><i class="bi bi-percent"></i></div>
-						<h3 class="fw-bold mb-1">{{ attendance_pct }}%</h3>
-						<span class="text-muted small">Overall Attendance</span>
+		<!-- Main Grid: Upcoming Classes & Assignments -->
+		<div class="row g-4 mb-4">
+			<div class="col-lg-7">
+				<div class="academic-card p-4 bg-white h-100">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-1.5 text-primary"></i> Class Schedule ({{ student.department or '' }} &bull; {{ student.semester or '' }})</h6>
+						<span class="badge bg-light text-dark border">{{ today_formatted }}</span>
 					</div>
-				</div>
-				<div class="col-lg-3 col-6">
-					<div class="glass-card p-4 text-center">
-						<div class="stat-icon bg-primary-subtle text-primary mx-auto mb-2"><i class="bi bi-mortarboard"></i></div>
-						<h3 class="fw-bold mb-1">{{ student.cgpa }}</h3>
-						<span class="text-muted small">Cumulative GPA</span>
-					</div>
-				</div>
-				<div class="col-lg-3 col-6">
-					<div class="glass-card p-4 text-center">
-						<div class="stat-icon bg-info-subtle text-info mx-auto mb-2"><i class="bi bi-check-circle"></i></div>
-						<h3 class="fw-bold mb-1">Clear</h3>
-						<span class="text-muted small">Fee Status</span>
-					</div>
-				</div>
-				<div class="col-lg-3 col-6">
-					<div class="glass-card p-4 text-center">
-						<div class="stat-icon bg-warning-subtle text-warning mx-auto mb-2"><i class="bi bi-file-earmark-text"></i></div>
-						<h3 class="fw-bold mb-1">2 Pending</h3>
-						<span class="text-muted small">Assignments</span>
-					</div>
-				</div>
-			</div>
-
-			<!-- Dashboard Main Grid -->
-			<div class="row g-4">
-				<div class="col-lg-8">
-					<div class="glass-card p-4 mb-4">
-						<h4 class="fw-bold mb-3"><i class="bi bi-bell me-2 text-primary"></i> Recent Campus Notices</h4>
-						<div class="vstack gap-3">
-							{% for notif in notifications %}
-							<div class="p-3 bg-body-tertiary rounded-3 border-start border-4 border-primary">
-								<div class="d-flex justify-content-between align-items-center mb-1">
-									<h6 class="fw-bold mb-0">{{ notif.title }}</h6>
-									<span class="badge bg-secondary-subtle text-secondary small">{{ notif.date }}</span>
+					<div class="list-group list-group-flush">
+						{% for item in today_schedule %}
+						<div class="list-group-item bg-transparent border-0 px-0 py-2.5 d-flex align-items-center justify-content-between {% if not loop.first %}border-top{% endif %}">
+							<div class="d-flex align-items-center gap-3">
+								<div class="p-2 rounded bg-light text-primary fw-bold text-center border" style="width: 75px;">
+									<small class="d-block text-uppercase fs-7 text-muted">{{ item.time.split(' ')[1] if ' ' in item.time else '' }}</small>
+									{{ item.time.split(' ')[0] if ' ' in item.time else item.time }}
 								</div>
-								<p class="text-muted small mb-0">{{ notif.message }}</p>
+								<div>
+									<h6 class="fw-bold mb-0 text-dark">{{ item.course_name }}</h6>
+									<small class="text-muted">{{ item.course_code }} &bull; {{ item.venue }}</small>
+								</div>
 							</div>
-							{% endfor %}
+							<span class="badge {{ item.badge }}">{{ item.type }}</span>
 						</div>
+						{% else %}
+						<div class="text-center py-4 text-muted">
+							<i class="bi bi-calendar-x fs-3 d-block mb-1"></i>
+							No classes scheduled for today.
+						</div>
+						{% endfor %}
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-4">
-					<div class="glass-card p-4 mb-4">
-						<h5 class="fw-bold mb-3"><i class="bi bi-link-45deg me-1 text-primary"></i> Quick Actions</h5>
-						<div class="d-grid gap-2">
-							<a href="/student/attendance" class="btn btn-outline-primary text-start"><i class="bi bi-calendar3 me-2"></i> View Subject Attendance</a>
-							<a href="/student/marks" class="btn btn-outline-primary text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> View Mark Sheets</a>
-							<a href="/student/fees" class="btn btn-outline-primary text-start"><i class="bi bi-credit-card me-2"></i> Download Fee Receipts</a>
-							<a href="/student/profile" class="btn btn-outline-primary text-start"><i class="bi bi-person-lines-fill me-2"></i> Update Contact Info</a>
+			<div class="col-lg-5">
+				<div class="academic-card p-4 bg-white h-100">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h6 class="fw-bold mb-0"><i class="bi bi-exclamation-circle me-1.5 text-warning"></i> Assignments</h6>
+						<a href="/student/assignments" class="small text-primary font-semibold text-decoration-none">View All</a>
+					</div>
+					<div class="d-flex flex-column gap-3">
+						{% for assg in pending_assignments_list %}
+						<div class="p-3 rounded border bg-light">
+							<div class="d-flex justify-content-between align-items-start mb-1">
+								<h6 class="fw-bold mb-0 fs-7 text-dark">{{ assg.title }}</h6>
+								<span class="badge {{ assg.badge_class }}">{{ assg.status }}</span>
+							</div>
+							<small class="text-muted d-block">{{ assg.subject or assg.department }} &bull; Due: {{ assg.due_date }}</small>
 						</div>
+						{% else %}
+						<div class="text-center py-4 text-muted">
+							<i class="bi bi-journal-check fs-3 d-block mb-1"></i>
+							No pending assignments.
+						</div>
+						{% endfor %}
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
 
-	{% include "templates/includes/footer.html" %}
+		<!-- Announcements & Quick Actions -->
+		<div class="row g-4">
+			<div class="col-lg-8">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3"><i class="bi bi-megaphone me-1.5 text-primary"></i> Latest Academic Announcements</h6>
+					<div class="d-flex flex-column gap-3">
+						{% for item in notifications %}
+						<div class="p-3 rounded border border-start border-primary border-4 bg-white">
+							<div class="d-flex justify-content-between align-items-center mb-1">
+								<span class="badge bg-primary text-white">{{ item.category or 'ANNOUNCEMENT' }}</span>
+								<small class="text-muted">{{ item.date }}</small>
+							</div>
+							<h6 class="fw-bold mb-1 text-dark">{{ item.title }}</h6>
+							<p class="text-muted small mb-0">{{ item.message }}</p>
+						</div>
+						{% else %}
+						<div class="text-center py-4 text-muted">No announcements posted.</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/practice_app/js/student_portal.js"></script>
-</body>
-</html>
+			<div class="col-lg-4">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3"><i class="bi bi-lightning-charge me-1.5 text-primary"></i> Quick Student Actions</h6>
+					<div class="d-flex flex-column gap-2">
+						<a href="/student/attendance" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2.5">
+							<span><i class="bi bi-calendar-check me-2 text-primary"></i> Check Attendance %</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/leave" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2.5">
+							<span><i class="bi bi-calendar-minus me-2 text-primary"></i> Apply for Academic Leave</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/certificates" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2.5">
+							<span><i class="bi bi-patch-check me-2 text-primary"></i> Request Bonafide Certificate</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/profile" class="btn btn-academic-navy text-start d-flex align-items-center justify-content-between py-2.5">
+							<span><i class="bi bi-person me-2"></i> View Student Profile</span>
+							<i class="bi bi-chevron-right small"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 22. Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item active"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+{% endblock %}

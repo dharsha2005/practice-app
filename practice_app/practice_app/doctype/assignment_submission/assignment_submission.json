@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-10 16:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "submission_info_section",
+  "assignment",
+  "assignment_title",
+  "student",
+  "cb1",
+  "student_name",
+  "submission_date",
+  "status",
+  "details_section",
+  "submitted_file",
+  "comments",
+  "grade_section",
+  "marks_obtained",
+  "total_marks",
+  "faculty_feedback"
+ ],
+ "fields": [
+  {
+   "fieldname": "submission_info_section",
+   "fieldtype": "Section Break",
+   "label": "Submission Details"
+  },
+  {
+   "fieldname": "assignment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Assignment",
+   "options": "Assignment",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "assignment.title",
+   "fieldname": "assignment_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Assignment Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student-form",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "student.student_name",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "submission_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Submission Date"
+  },
+  {
+   "default": "Submitted",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Submitted\nGraded\nLate\nRejected"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Submitted File & Comments"
+  },
+  {
+   "fieldname": "submitted_file",
+   "fieldtype": "Attach",
+   "label": "Submitted File (PDF / ZIP / Code)"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Text",
+   "label": "Student Comments"
+  },
+  {
+   "fieldname": "grade_section",
+   "fieldtype": "Section Break",
+   "label": "Faculty Grading"
+  },
+  {
+   "fieldname": "marks_obtained",
+   "fieldtype": "Float",
+   "label": "Marks Obtained"
+  },
+  {
+   "fieldname": "total_marks",
+   "fieldtype": "Float",
+   "label": "Total Marks"
+  },
+  {
+   "fieldname": "faculty_feedback",
+   "fieldtype": "Text Editor",
+   "label": "Faculty Feedback"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-10 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "Assignment Submission",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "All",
+   "write": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

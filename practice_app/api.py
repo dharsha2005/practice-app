@@ -7,13 +7,20 @@ import frappe
 from frappe import _
 from typing import Dict, Any, List, Optional
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def custom_logout():
 	"""Logs out the current user session and redirects to login page."""
 	if hasattr(frappe.local, "login_manager"):
 		frappe.local.login_manager.logout()
 	frappe.db.commit()
-	frappe.redirect("/login")
+	frappe.respond_as_web_page(
+		_("Logged Out"),
+		_("You have been successfully logged out of the EDU Portal."),
+		indicator_color="green",
+		primary_action="/login",
+		primary_action_label=_("Go to Login")
+	)
+
 
 @frappe.whitelist(allow_guest=True)
 def get_public_stats() -> Dict[str, int]:
@@ -312,29 +319,223 @@ def add_marks(student_id: str, subject: str, exam_type: str, obtained_marks: flo
 # ==================================================
 
 @frappe.whitelist()
-def get_certificates(student_id: str) -> List[Dict[str, Any]]:
+def get_certificates(student_id: Optional[str] = None) -> List[Dict[str, Any]]:
 	"""Gets issued certificates for a student."""
+	user = frappe.session.user
+	if user == "Guest":
+		return []
+
+	if not student_id:
+		student_doc = (
+			frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name"], as_dict=True)
+			or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name"], as_dict=True)
+		)
+		student_id = student_doc.get("name") if student_doc else None
+
+	if not student_id:
+		return []
+
 	return frappe.get_all(
 		"Certificate",
 		filters={"student": student_id},
-		fields=["name", "certificate_type", "issue_date", "status", "certificate_file"]
+		fields=["name", "certificate_type", "issue_date", "status", "certificate_file"],
+		order_by="issue_date desc"
 	)
 
 @frappe.whitelist()
-def request_certificate(student_id: str, certificate_type: str) -> Dict[str, Any]:
-	"""Requests certificate issuance."""
+def submit_certificate_request(certificate_type: str, reason: Optional[str] = None) -> Dict[str, Any]:
+	"""Submits a new certificate request for the logged-in student."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to submit certificate requests."), frappe.PermissionError)
+
+	if not certificate_type:
+		frappe.throw(_("Certificate Type is required."))
+
+	student_doc = (
+		frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name"], as_dict=True)
+		or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name"], as_dict=True)
+	)
+	if not student_doc:
+		frappe.throw(_("Student profile not found. Please complete your profile first."))
+
 	cert = frappe.get_doc({
 		"doctype": "Certificate",
-		"student": student_id,
+		"student": student_doc.get("name"),
+		"student_name": student_doc.get("student_name"),
 		"certificate_type": certificate_type,
-		"status": "Pending",
-		"issue_date": frappe.utils.today()
+		"issue_date": frappe.utils.today(),
+		"status": "Pending"
 	})
-	cert.insert()
+	cert.insert(ignore_permissions=True)
 	frappe.db.commit()
 
 	return {
 		"status": "success",
-		"message": _("Certificate request submitted successfully."),
+		"message": _("Certificate request submitted successfully! Academic office will verify your request."),
 		"certificate_id": cert.name
+	}
+
+# ==================================================
+# ASSIGNMENT SUBMISSION API (REAL DOCTYPE LINKED)
+# ==================================================
+
+@frappe.whitelist()
+def submit_assignment(assignment_name: str, comments: Optional[str] = None, submitted_file: Optional[str] = None) -> Dict[str, Any]:
+	"""Creates an Assignment Submission record in the database for the logged-in student.
+	   Marks the row as Submitted so the UI can reflect the real status on reload.
+	"""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to submit assignments."), frappe.PermissionError)
+
+	# Validate that the assignment exists
+	if not frappe.db.exists("Assignment", assignment_name):
+		frappe.throw(_("Assignment not found: {0}").format(assignment_name))
+
+	# Fetch student record linked to this user
+	student_doc = (
+		frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name"], as_dict=True)
+		or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name"], as_dict=True)
+	)
+	if not student_doc:
+		frappe.throw(_("Student profile not found for this user. Please complete your profile first."))
+
+	# Check if already submitted
+	existing = frappe.db.exists("Assignment Submission", {
+		"assignment": assignment_name,
+		"student": student_doc.get("name")
+	})
+	if existing:
+		return {
+			"status": "already_submitted",
+			"message": _("You have already submitted this assignment."),
+			"submission_id": existing
+		}
+
+	# Create real submission record
+	submission = frappe.get_doc({
+		"doctype": "Assignment Submission",
+		"assignment": assignment_name,
+		"student": student_doc.get("name"),
+		"student_name": student_doc.get("student_name"),
+		"submission_date": frappe.utils.today(),
+		"status": "Submitted",
+		"comments": comments or "",
+		"submitted_file": submitted_file or ""
+	})
+	submission.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Assignment submitted successfully! Your submission is now under faculty review."),
+		"submission_id": submission.name
+	}
+
+@frappe.whitelist()
+def get_student_submissions(student_id: Optional[str] = None) -> List[Dict[str, Any]]:
+	"""Returns all submission records for a student, used to determine assignment status on the UI."""
+	user = frappe.session.user
+	if user == "Guest":
+		return []
+
+	if not student_id:
+		student_rec = (
+			frappe.db.get_value("Student-form", {"email": user}, "name")
+			or frappe.db.get_value("Student-form", {"owner": user}, "name")
+		)
+	else:
+		student_rec = student_id
+
+	if not student_rec:
+		return []
+
+	return frappe.get_all(
+		"Assignment Submission",
+		filters={"student": student_rec},
+		fields=["name", "assignment", "status", "submission_date", "marks_obtained", "total_marks", "faculty_feedback"],
+		order_by="submission_date desc"
+	)
+
+# ==================================================
+# LEAVE APPLICATION API (REAL DOCTYPE LINKED)
+# ==================================================
+
+@frappe.whitelist()
+def submit_leave_application(leave_type: str, from_date: str, to_date: str, reason: str, supporting_document: Optional[str] = None) -> Dict[str, Any]:
+	"""Creates a Leave Application record in the Leave Application DocType for the logged-in student."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to submit leave applications."), frappe.PermissionError)
+
+	if not leave_type or not from_date or not to_date or not reason:
+		frappe.throw(_("Leave Type, From Date, To Date and Reason are all required fields."))
+
+	student_doc = (
+		frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name", "department"], as_dict=True)
+		or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name", "department"], as_dict=True)
+	)
+	if not student_doc:
+		frappe.throw(_("Student profile not found. Please complete your profile first."))
+
+	from frappe.utils import date_diff
+	try:
+		days = date_diff(to_date, from_date) + 1
+	except Exception:
+		days = 1
+
+	if days <= 0:
+		frappe.throw(_("To Date must be on or after From Date."))
+
+	leave = frappe.get_doc({
+		"doctype": "Leave Application",
+		"student": student_doc.get("name"),
+		"student_name": student_doc.get("student_name"),
+		"department": student_doc.get("department"),
+		"leave_type": leave_type,
+		"from_date": from_date,
+		"to_date": to_date,
+		"no_of_days": days,
+		"reason": reason,
+		"supporting_document": supporting_document or "",
+		"status": "Pending"
+	})
+	leave.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Leave application submitted successfully! It is now pending faculty approval."),
+		"leave_id": leave.name,
+		"no_of_days": days
+	}
+
+@frappe.whitelist()
+def cancel_leave_application(leave_id: str) -> Dict[str, Any]:
+	"""Cancels a pending leave application."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in."), frappe.PermissionError)
+
+	student_rec = (
+		frappe.db.get_value("Student-form", {"email": user}, "name")
+		or frappe.db.get_value("Student-form", {"owner": user}, "name")
+	)
+
+	leave = frappe.get_doc("Leave Application", leave_id)
+
+	# Only allow cancellation if the leave belongs to this student and is still pending
+	if leave.student != student_rec:
+		frappe.throw(_("Permission denied: This leave application does not belong to you."), frappe.PermissionError)
+	if leave.status != "Pending":
+		frappe.throw(_("Only pending leave applications can be cancelled."))
+
+	leave.status = "Cancelled"
+	leave.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Leave application cancelled successfully.")
 	}

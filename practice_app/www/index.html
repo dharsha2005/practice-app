@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
+	<title>TIT Institute of Technology | Technical College EDU Portal</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
@@ -12,218 +12,245 @@
 
 	{% include "templates/includes/navbar.html" %}
 
-	<!-- Hero Banner -->
-	<section class="hero-section text-center text-lg-start">
-		<div class="container">
-			<div class="row align-items-center g-5">
-				<div class="col-lg-7 animate-fade-in">
-					<span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">
-						<i class="bi bi-stars me-1"></i> Frappe v17 Powered Higher Education
+	<!-- 1. Hero Section -->
+	<section class="academic-hero py-6 py-lg-7 text-white position-relative">
+		<div class="container position-relative" style="z-index: 2;">
+			<div class="row align-items-center g-5 py-4">
+				<div class="col-lg-7">
+					<span class="hero-tag d-inline-block mb-3">
+						<i class="bi bi-cpu-fill me-1.5"></i> Premiere Technical & Engineering Institution
 					</span>
-					<h1 class="hero-title mb-4">Empowering Minds, Shaping Tomorrow's Leaders</h1>
-					<p class="lead text-muted mb-4">
-						Welcome to EduPortal — a state-of-the-art college portal designed for seamless academic management, real-time student tracking, and interactive learning experiences.
+					<h1 class="hero-title mb-4">Empowering the Next Generation of Engineers</h1>
+					<p class="fs-5 text-light opacity-90 mb-4 max-w-2xl leading-relaxed" style="max-width: 620px;">
+						Learn. Innovate. Build the Future. Accelerate your engineering career with world-class labs, industry-integrated curriculum, and research-driven academics.
 					</p>
-					<div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-						<a href="/courses" class="btn btn-primary-gradient">
-							Explore Courses <i class="bi bi-arrow-right ms-1"></i>
+					<div class="d-flex flex-wrap gap-3">
+						<a href="/student/admission" class="btn btn-academic-primary btn-lg px-4 py-3 fs-6">
+							Apply for Admission <i class="bi bi-arrow-right ms-2"></i>
 						</a>
-						<a href="/student" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-semibold">
-							<i class="bi bi-person-workspace me-1"></i> Student Portal
+						<a href="/login" class="btn btn-outline-light btn-lg px-4 py-3 fs-6 font-semibold">
+							<i class="bi bi-person-workspace me-2"></i> Student Portal Login
 						</a>
 					</div>
 				</div>
-				<div class="col-lg-5 animate-fade-in">
-					<div class="glass-card p-4 text-center">
-						<img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" alt="Students Learning" class="img-fluid rounded-4 mb-3 shadow-sm">
-						<h5 class="fw-bold mb-1">Admissions Open for 2026-2027</h5>
-						<p class="text-muted small mb-3">Apply now to secure your seat in top-tier engineering & technology programs.</p>
-						<a href="/contact" class="btn btn-sm btn-primary px-3 rounded-pill">Apply Now</a>
+				<div class="col-lg-5">
+					<div class="academic-card bg-white text-dark p-4 shadow-elevated position-relative">
+						<div class="position-absolute top-0 end-0 m-3">
+							<span class="badge bg-danger text-white px-2.5 py-1 font-semibold fs-7">ADMISSIONS 2026</span>
+						</div>
+						<div class="d-flex align-items-center gap-3 mb-3">
+							<div class="brand-badge" style="width: 48px; height: 48px; font-size: 1.5rem;">
+								<i class="bi bi-award-fill"></i>
+							</div>
+							<div>
+								<h6 class="fw-bold mb-0">NAAC A++ Accredited</h6>
+								<small class="text-muted">NIRF Top 50 Engineering Ranking</small>
+							</div>
+						</div>
+						<img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Engineering Innovation Lab" class="img-fluid rounded-md mb-3" style="height: 220px; width: 100%; object-fit: cover;">
+						<h6 class="fw-bold mb-1">B.Tech & M.Tech Admissions Open</h6>
+						<p class="text-muted small mb-3">Join over 5,000+ students building cutting-edge technologies in AI, Robotics, Cyber Security & Renewable Energy.</p>
+						<a href="/student/admission" class="btn btn-academic-navy w-100 py-2">Explore Admissions Timeline</a>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Statistics Section -->
-	<section class="py-5">
+	<!-- 2. Academic Statistics Section -->
+	<section class="py-5 bg-white border-bottom">
 		<div class="container">
-			<div class="row g-4">
-				<div class="col-md-3 col-6">
-					<div class="glass-card stat-card">
-						<div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-						<div class="stat-number">{{ stats.students }}+</div>
-						<div class="text-muted small fw-medium">Active Students</div>
+			<div class="row g-4 text-center">
+				<div class="col-lg-2.4 col-md-4 col-6">
+					<div class="stat-box h-100">
+						<div class="stat-number">25+</div>
+						<div class="stat-label">Years of Excellence</div>
 					</div>
 				</div>
-				<div class="col-md-3 col-6">
-					<div class="glass-card stat-card">
-						<div class="stat-icon"><i class="bi bi-journal-bookmark-fill"></i></div>
-						<div class="stat-number">{{ stats.courses }}</div>
-						<div class="text-muted small fw-medium">Academic Courses</div>
+				<div class="col-lg-2.4 col-md-4 col-6">
+					<div class="stat-box h-100">
+						<div class="stat-number">5,000+</div>
+						<div class="stat-label">Students Enrolled</div>
 					</div>
 				</div>
-				<div class="col-md-3 col-6">
-					<div class="glass-card stat-card">
-						<div class="stat-icon"><i class="bi bi-building"></i></div>
-						<div class="stat-number">{{ stats.departments }}</div>
-						<div class="text-muted small fw-medium">Departments</div>
+				<div class="col-lg-2.4 col-md-4 col-6">
+					<div class="stat-box h-100">
+						<div class="stat-number">250+</div>
+						<div class="stat-label">Expert Faculty</div>
 					</div>
 				</div>
-				<div class="col-md-3 col-6">
-					<div class="glass-card stat-card">
-						<div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
-						<div class="stat-number">{{ stats.placement_rate }}%</div>
-						<div class="text-muted small fw-medium">Placement Rate</div>
+				<div class="col-lg-2.4 col-md-4 col-6">
+					<div class="stat-box h-100">
+						<div class="stat-number">15+</div>
+						<div class="stat-label">Academic Departments</div>
+					</div>
+				</div>
+				<div class="col-lg-2.4 col-md-4 col-6">
+					<div class="stat-box h-100">
+						<div class="stat-number">100+</div>
+						<div class="stat-label">Industry Partners</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Featured Courses -->
-	<section class="py-5">
+	<!-- 3. Departments Section -->
+	<section class="py-6 bg-light" id="departments">
 		<div class="container">
-			<div class="d-flex justify-content-between align-items-center mb-4">
-				<div>
-					<h2 class="fw-bold mb-1">Featured Academic Courses</h2>
-					<p class="text-muted mb-0">Discover industry-aligned undergraduate engineering degrees.</p>
-				</div>
-				<a href="/courses" class="btn btn-outline-primary rounded-pill btn-sm px-3">View All Courses</a>
+			<div class="text-center max-w-2xl mx-auto mb-5" style="max-width: 650px;">
+				<span class="text-primary fw-bold text-uppercase tracking-wider small">Academic Disciplines</span>
+				<h2 class="fw-extrabold fs-2 mt-1">Engineering & Technology Departments</h2>
+				<p class="text-muted">Rigorous curriculum designed in collaboration with top tech enterprises and global research institutions.</p>
 			</div>
 			<div class="row g-4">
-				{% for course in featured_courses %}
 				<div class="col-lg-3 col-md-6">
-					<div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
 						<div>
-							<div class="d-flex justify-content-between align-items-center mb-3">
-								<span class="badge bg-primary-subtle text-primary fw-semibold">{{ course.dept }}</span>
-								<span class="badge bg-warning-subtle text-warning fw-semibold">{{ course.badge }}</span>
+							<div class="p-3 rounded-md bg-blue-subtle text-primary d-inline-block mb-3" style="background: #eff6ff; width: 50px; height: 50px; text-align: center;">
+								<i class="bi bi-code-slash fs-4"></i>
 							</div>
-							<h5 class="fw-bold mb-2">{{ course.name }}</h5>
-							<p class="text-muted small mb-3">{{ course.desc }}</p>
+							<h5 class="fw-bold mb-2">Computer Science & Engineering</h5>
+							<p class="text-muted small mb-3">Algorithms, System Architecture, Software Development, and Cloud Computing.</p>
 						</div>
-						<div class="pt-3 border-top d-flex justify-content-between align-items-center text-muted small">
-							<span><i class="bi bi-clock me-1"></i> {{ course.duration }}</span>
-							<a href="/courses" class="text-primary fw-semibold text-decoration-none">Details <i class="bi bi-chevron-right"></i></a>
+						<div>
+							<div class="d-flex justify-content-between align-items-center pt-3 border-top small text-muted">
+								<span><i class="bi bi-journal-text me-1"></i> 6 Programs</span>
+								<a href="/courses" class="fw-bold text-primary text-decoration-none">Explore <i class="bi bi-arrow-right"></i></a>
+							</div>
 						</div>
 					</div>
 				</div>
-				{% endfor %}
+				<div class="col-lg-3 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
+						<div>
+							<div class="p-3 rounded-md bg-cyan-subtle text-cyan d-inline-block mb-3" style="background: #e0f2fe; color: #0284c7; width: 50px; height: 50px; text-align: center;">
+								<i class="bi bi-robot fs-4"></i>
+							</div>
+							<h5 class="fw-bold mb-2">AI & Data Science</h5>
+							<p class="text-muted small mb-3">Machine Learning, Neural Networks, Computer Vision, and Big Data Analytics.</p>
+						</div>
+						<div>
+							<div class="d-flex justify-content-between align-items-center pt-3 border-top small text-muted">
+								<span><i class="bi bi-journal-text me-1"></i> 4 Programs</span>
+								<a href="/courses" class="fw-bold text-primary text-decoration-none">Explore <i class="bi bi-arrow-right"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
+						<div>
+							<div class="p-3 rounded-md bg-indigo-subtle text-indigo d-inline-block mb-3" style="background: #e0e7ff; color: #4338ca; width: 50px; height: 50px; text-align: center;">
+								<i class="bi bi-shield-lock fs-4"></i>
+							</div>
+							<h5 class="fw-bold mb-2">Cyber Security</h5>
+							<p class="text-muted small mb-3">Ethical Hacking, Network Security, Cryptography, and Digital Forensics.</p>
+						</div>
+						<div>
+							<div class="d-flex justify-content-between align-items-center pt-3 border-top small text-muted">
+								<span><i class="bi bi-journal-text me-1"></i> 3 Programs</span>
+								<a href="/courses" class="fw-bold text-primary text-decoration-none">Explore <i class="bi bi-arrow-right"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
+						<div>
+							<div class="p-3 rounded-md bg-emerald-subtle text-emerald d-inline-block mb-3" style="background: #d1fae5; color: #059669; width: 50px; height: 50px; text-align: center;">
+								<i class="bi bi-cpu fs-4"></i>
+							</div>
+							<h5 class="fw-bold mb-2">Electronics & Communication</h5>
+							<p class="text-muted small mb-3">VLSI Design, Embedded Systems, IoT Protocols, and Microprocessors.</p>
+						</div>
+						<div>
+							<div class="d-flex justify-content-between align-items-center pt-3 border-top small text-muted">
+								<span><i class="bi bi-journal-text me-1"></i> 5 Programs</span>
+								<a href="/courses" class="fw-bold text-primary text-decoration-none">Explore <i class="bi bi-arrow-right"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Events & Announcements -->
-	<section class="py-5">
+	<!-- 4. Academic Programs UI -->
+	<section class="py-6 bg-white border-top">
 		<div class="container">
+			<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+				<div>
+					<h2 class="fw-extrabold mb-1">Degrees & Degree Programs</h2>
+					<p class="text-muted mb-0">Undergraduate & Postgraduate Degree Offerings</p>
+				</div>
+				<!-- Filter Controls -->
+				<div class="d-flex flex-wrap gap-2">
+					<button class="btn btn-academic-navy btn-sm px-3">All Programs</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Undergraduate</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Postgraduate</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Research</button>
+				</div>
+			</div>
+
 			<div class="row g-4">
-				<div class="col-lg-8">
-					<div class="glass-card p-4">
-						<div class="d-flex justify-content-between align-items-center mb-4">
-							<h3 class="fw-bold mb-0">Campus Events & News</h3>
-							<a href="/events" class="text-primary text-decoration-none small fw-semibold">See All Events</a>
-						</div>
-						<div class="vstack gap-3">
-							{% for event in upcoming_events %}
-							<div class="p-3 rounded-3 bg-body-tertiary d-flex align-items-center justify-content-between">
-								<div class="d-flex align-items-center gap-3">
-									<div class="bg-primary text-white p-3 rounded-3 text-center" style="min-width: 65px;">
-										<i class="bi bi-calendar-event fs-4"></i>
-									</div>
-									<div>
-										<span class="badge bg-secondary-subtle text-secondary small mb-1">{{ event.category }}</span>
-										<h6 class="fw-bold mb-1">{{ event.title }}</h6>
-										<span class="text-muted small me-3"><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</span>
-										<span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ event.date }}</span>
-									</div>
-								</div>
-								<a href="/events" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="bi bi-arrow-right"></i></a>
-							</div>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4">
-					<div class="glass-card p-4 h-100 bg-primary text-white d-flex flex-column justify-content-between">
+				<div class="col-lg-4 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
 						<div>
-							<span class="badge bg-white text-primary mb-3">Student Portal</span>
-							<h3 class="fw-bold text-white mb-3">Access Your Academic Records Anywhere</h3>
-							<p class="text-white-50 mb-4">Log in to view attendance, internal marks, fee payments, assignment submissions, and hall tickets online.</p>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">B.Tech</span>
+								<span class="text-muted small"><i class="bi bi-clock me-1"></i> 4 Years</span>
+							</div>
+							<h5 class="fw-bold mb-1">B.Tech Computer Science & Engineering</h5>
+							<small class="text-muted d-block mb-3">Department of CSE</small>
+							<p class="text-muted small">Full-time 8 semester degree program covering core software engineering, data structures, and enterprise applications.</p>
 						</div>
-						<a href="/student" class="btn btn-light text-primary fw-bold w-100 py-2 rounded-3">Go to Student Portal</a>
+						<div class="pt-3 border-top d-flex gap-2">
+							<a href="/courses" class="btn btn-academic-outline btn-sm w-50">View Program</a>
+							<a href="/student/admission" class="btn btn-academic-primary btn-sm w-50">Apply Now</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
+						<div>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-primary text-white font-semibold">B.Tech</span>
+								<span class="text-muted small"><i class="bi bi-clock me-1"></i> 4 Years</span>
+							</div>
+							<h5 class="fw-bold mb-1">B.Tech Artificial Intelligence & Data Science</h5>
+							<small class="text-muted d-block mb-3">Department of AI & DS</small>
+							<p class="text-muted small">Specialized curriculum focusing on deep learning models, natural language processing, and high-performance computing.</p>
+						</div>
+						<div class="pt-3 border-top d-flex gap-2">
+							<a href="/courses" class="btn btn-academic-outline btn-sm w-50">View Program</a>
+							<a href="/student/admission" class="btn btn-academic-primary btn-sm w-50">Apply Now</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="academic-card p-4 h-100 d-flex flex-column justify-content-between">
+						<div>
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="badge bg-secondary text-dark font-semibold">M.Tech</span>
+								<span class="text-muted small"><i class="bi bi-clock me-1"></i> 2 Years</span>
+							</div>
+							<h5 class="fw-bold mb-1">M.Tech Cyber Security & Defense</h5>
+							<small class="text-muted d-block mb-3">Department of Cyber Security</small>
+							<p class="text-muted small">Advanced postgraduate degree in vulnerability research, cloud infrastructure security, and threat intelligence.</p>
+						</div>
+						<div class="pt-3 border-top d-flex gap-2">
+							<a href="/courses" class="btn btn-academic-outline btn-sm w-50">View Program</a>
+							<a href="/student/admission" class="btn btn-academic-primary btn-sm w-50">Apply Now</a>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Contact Form Section -->
-	<section class="py-5">
-		<div class="container">
-			<div class="glass-card p-4 p-md-5">
-				<div class="row align-items-center g-5">
-					<div class="col-lg-5">
-						<span class="text-primary fw-semibold small text-uppercase">Get In Touch</span>
-						<h2 class="fw-bold mb-3">Have Questions? Talk to Our Admissions Team</h2>
-						<p class="text-muted mb-4">Fill out the form and our counselor will reach out to you within 24 hours.</p>
-						<div class="d-flex align-items-center mb-3">
-							<div class="bg-primary-subtle text-primary p-3 rounded-circle me-3"><i class="bi bi-telephone-fill"></i></div>
-							<div>
-								<div class="text-muted small">Call Toll Free</div>
-								<div class="fw-bold">+1 (800) 123-4567</div>
-							</div>
-						</div>
-						<div class="d-flex align-items-center">
-							<div class="bg-primary-subtle text-primary p-3 rounded-circle me-3"><i class="bi bi-envelope-fill"></i></div>
-							<div>
-								<div class="text-muted small">Email Admissions</div>
-								<div class="fw-bold">admissions@eduportal.edu</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-7">
-						<form id="portal-contact-form">
-							<div class="row g-3">
-								<div class="col-md-6">
-									<label class="form-label fw-semibold">Full Name *</label>
-									<input type="text" id="contact-name" class="form-control py-2" required placeholder="John Doe">
-								</div>
-								<div class="col-md-6">
-									<label class="form-label fw-semibold">Email Address *</label>
-									<input type="email" id="contact-email" class="form-control py-2" required placeholder="john@example.com">
-								</div>
-								<div class="col-md-6">
-									<label class="form-label fw-semibold">Phone Number</label>
-									<input type="tel" id="contact-phone" class="form-control py-2" placeholder="+1234567890">
-								</div>
-								<div class="col-md-6">
-									<label class="form-label fw-semibold">Subject</label>
-									<input type="text" id="contact-subject" class="form-control py-2" placeholder="Course Enquiry">
-								</div>
-								<div class="col-12">
-									<label class="form-label fw-semibold">Message *</label>
-									<textarea id="contact-message" class="form-control" rows="4" required placeholder="How can we help you?"></textarea>
-								</div>
-								<div class="col-12">
-									<button type="submit" class="btn btn-primary-gradient px-4 py-2">
-										Send Message <i class="bi bi-send ms-1"></i>
-									</button>
-								</div>
-							</div>
-							<div id="contact-form-response" class="d-none"></div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
+	<!-- Footer -->
 	{% include "templates/includes/footer.html" %}
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/frappe/js/lib/jquery/jquery.min.js"></script>
-	<script src="/assets/frappe/js/frappe/request.js"></script>
-	<script src="/assets/practice_app/js/student_portal.js"></script>
 </body>
 </html>

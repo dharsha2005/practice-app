@@ -1,49 +1,39 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:course_code",
- "creation": "2026-08-07 15:31:00.000000",
+ "creation": "2026-08-10 15:30:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "course_info_section",
-  "course_name",
-  "course_code",
-  "department",
+  "material_info_section",
+  "title",
+  "course",
   "semester",
   "cb1",
-  "duration_years",
-  "credits",
-  "description_section",
+  "material_type",
+  "file_attachment",
+  "desc_section",
   "description"
  ],
  "fields": [
   {
-   "fieldname": "course_info_section",
+   "fieldname": "material_info_section",
    "fieldtype": "Section Break",
-   "label": "Course Information"
+   "label": "Resource Details"
   },
   {
-   "fieldname": "course_name",
+   "fieldname": "title",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Course Name",
+   "label": "Title / Topic",
    "reqd": 1
   },
   {
-   "fieldname": "course_code",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Course Code",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "department",
+   "fieldname": "course",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Department",
-   "options": "Department",
+   "label": "Course",
+   "options": "Course",
    "reqd": 1
   },
   {
@@ -59,21 +49,22 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "4",
-   "fieldname": "duration_years",
-   "fieldtype": "Int",
-   "label": "Duration (Years)"
+   "default": "Lecture Notes",
+   "fieldname": "material_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Material Type",
+   "options": "Lecture Notes\nSyllabus PDF\nLab Manual\nReference Textbook\nQuestion Bank"
   },
   {
-   "default": "160",
-   "fieldname": "credits",
-   "fieldtype": "Int",
-   "label": "Total Credits"
+   "fieldname": "file_attachment",
+   "fieldtype": "Attach",
+   "label": "File Attachment"
   },
   {
-   "fieldname": "description_section",
+   "fieldname": "desc_section",
    "fieldtype": "Section Break",
-   "label": "Course Overview"
+   "label": "Description & Instructions"
   },
   {
    "fieldname": "description",
@@ -84,11 +75,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-10 15:43:00.000000",
+ "modified": "2026-08-10 15:30:00.000000",
  "modified_by": "Administrator",
  "module": "Practice App",
- "name": "Course",
- "naming_rule": "By fieldname",
+ "name": "Course Material",
+ "naming_rule": "Autoincrement",
  "owner": "Administrator",
  "permissions": [
   {
@@ -102,6 +93,10 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "All"
   }
  ],
  "sort_field": "modified",

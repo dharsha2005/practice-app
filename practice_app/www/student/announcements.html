@@ -1,0 +1,109 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">CAMPUS</div>
+		<a href="/student/announcements" class="sidebar-link active"><i class="bi bi-megaphone"></i> Announcements</a>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/events" class="sidebar-link"><i class="bi bi-calendar-event"></i> Events</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Official Notice Center & Circulars</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+			<div>
+				<h4 class="fw-extrabold mb-1">Campus Circulars & Official Notices</h4>
+				<p class="text-muted small mb-0">Important announcements issued by the Controller of Examinations and Dean of Academics.</p>
+			</div>
+		</div>
+
+		<!-- 17. Search & Priority Filters -->
+		<div class="academic-card p-4 mb-4 bg-white">
+			<div class="row g-3">
+				<div class="col-md-6">
+					<div class="input-group">
+						<span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+						<input type="text" class="form-control border-start-0" placeholder="Search notices by keyword, circular number...">
+					</div>
+				</div>
+				<div class="col-md-6 d-flex flex-wrap gap-2 align-items-center justify-content-md-end">
+					<button class="btn btn-academic-navy btn-sm px-3">All Notices</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Academic</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Examination</button>
+					<button class="btn btn-academic-outline btn-sm px-3">Placement</button>
+					<button class="btn btn-academic-outline btn-sm px-3">General</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Notice Items List -->
+		<div class="d-flex flex-column gap-3">
+			<div class="academic-card p-4 bg-white border-start border-4 border-danger">
+				<div class="d-flex justify-content-between align-items-center mb-2">
+					<div class="d-flex align-items-center gap-2">
+						<span class="badge bg-danger text-white font-semibold">HIGH PRIORITY</span>
+						<span class="badge bg-light text-dark border">EXAMINATION</span>
+					</div>
+					<small class="text-muted"><i class="bi bi-calendar3 me-1"></i> 10 AUG 2026</small>
+				</div>
+				<h5 class="fw-bold mb-2">Internal Assessment Examination 1 Timetable Release</h5>
+				<p class="text-muted small mb-3">All 3rd year B.Tech students (CSE, IT, AI&DS, ECE, Mech, Civil) are instructed to review the mid-term examination timetable. Exams begin on 25th August 2026.</p>
+				<button class="btn btn-academic-outline btn-sm">Read Full Circular</button>
+			</div>
+
+			<div class="academic-card p-4 bg-white border-start border-4 border-success">
+				<div class="d-flex justify-content-between align-items-center mb-2">
+					<div class="d-flex align-items-center gap-2">
+						<span class="badge bg-success text-white font-semibold">PLACEMENT</span>
+					</div>
+					<small class="text-muted"><i class="bi bi-calendar3 me-1"></i> 08 AUG 2026</small>
+				</div>
+				<h5 class="fw-bold mb-2">On-Campus Recruitment Drive: Tech Global Solutions</h5>
+				<p class="text-muted small mb-3">Registration for the 2027 graduating batch is now live. Minimum CGPA criterion: 7.50 with no standing backlogs.</p>
+				<button class="btn btn-academic-outline btn-sm">Read Full Circular</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+{% endblock %}

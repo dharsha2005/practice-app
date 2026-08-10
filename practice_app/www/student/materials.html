@@ -1,0 +1,160 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+		<a href="/student/materials" class="sidebar-link active"><i class="bi bi-folder-symlink"></i> Materials</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Digital Academic Resource Library</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+			<div>
+				<h4 class="fw-extrabold mb-1">Learning Resources & Course Material</h4>
+				<p class="text-muted small mb-0">Download lecture slides, lab manuals, reference papers, and previous question banks.</p>
+			</div>
+		</div>
+
+		<!-- 15. Search & Category Filters -->
+		<div class="academic-card p-4 mb-4 bg-white">
+			<div class="row g-3">
+				<div class="col-md-5">
+					<div class="input-group">
+						<span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+						<input type="text" class="form-control border-start-0" placeholder="Search lecture notes, lab manuals, question banks...">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<select class="form-select">
+						<option selected>All Resource Categories</option>
+						<option>Lecture Notes</option>
+						<option>PDFs & Textbooks</option>
+						<option>Presentations (PPTX)</option>
+						<option>Lab Manuals</option>
+						<option>Question Banks</option>
+						<option>Previous Exam Papers</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<select class="form-select">
+						<option selected>Filter by Course (All)</option>
+						<option>CS301 Data Structures</option>
+						<option>CS302 Database Management Systems</option>
+						<option>CS303 Operating Systems</option>
+						<option>CS304 Computer Networks</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- File Library Cards -->
+		<div class="row g-4">
+			<div class="col-lg-4 col-md-6">
+				<div class="academic-card p-4 bg-white h-100 d-flex flex-column justify-content-between">
+					<div>
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<div class="brand-badge bg-danger text-white" style="width: 40px; height: 40px; font-size: 1.2rem;">
+								<i class="bi bi-file-earmark-pdf"></i>
+							</div>
+							<span class="badge bg-light text-dark border">PDF Document &bull; 4.2 MB</span>
+						</div>
+						<h6 class="fw-bold mb-1">Data Structures - Binary Trees & AVL Trees</h6>
+						<small class="text-muted d-block mb-3">Course: CS301 &bull; Faculty: Dr. John Smith</small>
+						<p class="text-muted small">Complete lecture notes covering height-balanced BSTs, rotations, and AVL node insertion algorithms.</p>
+					</div>
+					<div class="pt-3 border-top d-flex gap-2">
+						<a href="#" class="btn btn-academic-outline btn-sm w-50">View File</a>
+						<a href="#" class="btn btn-academic-primary btn-sm w-50"><i class="bi bi-download me-1"></i> Download</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-4 col-md-6">
+				<div class="academic-card p-4 bg-white h-100 d-flex flex-column justify-content-between">
+					<div>
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<div class="brand-badge bg-primary text-white" style="width: 40px; height: 40px; font-size: 1.2rem;">
+								<i class="bi bi-file-earmark-ppt"></i>
+							</div>
+							<span class="badge bg-light text-dark border">PPTX Presentation &bull; 12.8 MB</span>
+						</div>
+						<h6 class="fw-bold mb-1">DBMS - Relational Algebra & SQL Joins</h6>
+						<small class="text-muted d-block mb-3">Course: CS302 &bull; Faculty: Prof. Alan Turing</small>
+						<p class="text-muted small">Instructor presentation slides detailing inner, outer, left, right SQL join operations and query optimization.</p>
+					</div>
+					<div class="pt-3 border-top d-flex gap-2">
+						<a href="#" class="btn btn-academic-outline btn-sm w-50">View File</a>
+						<a href="#" class="btn btn-academic-primary btn-sm w-50"><i class="bi bi-download me-1"></i> Download</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-4 col-md-6">
+				<div class="academic-card p-4 bg-white h-100 d-flex flex-column justify-content-between">
+					<div>
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<div class="brand-badge bg-success text-white" style="width: 40px; height: 40px; font-size: 1.2rem;">
+								<i class="bi bi-file-earmark-code"></i>
+							</div>
+							<span class="badge bg-light text-dark border">Lab Manual &bull; 2.1 MB</span>
+						</div>
+						<h6 class="fw-bold mb-1">Operating Systems Lab Manual 2026</h6>
+						<small class="text-muted d-block mb-3">Course: CS303 &bull; Faculty: Dr. Grace Hopper</small>
+						<p class="text-muted small">Step-by-step POSIX thread programming, IPC pipe communication, and mutual exclusion lab experiments.</p>
+					</div>
+					<div class="pt-3 border-top d-flex gap-2">
+						<a href="#" class="btn btn-academic-outline btn-sm w-50">View File</a>
+						<a href="#" class="btn btn-academic-primary btn-sm w-50"><i class="bi bi-download me-1"></i> Download</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+{% endblock %}

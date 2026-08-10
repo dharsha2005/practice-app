@@ -1,7 +1,198 @@
-<h2>Admission Form</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admissions 2026-2027 | TIT Institute of Technology</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
+</head>
+<body>
 
-<p>
+	{% include "templates/includes/navbar.html" %}
 
-    Admissions Open
+	<!-- Admission Hero -->
+	<section class="academic-hero py-6 text-white text-center text-md-start">
+		<div class="container">
+			<div class="row align-items-center g-4">
+				<div class="col-lg-8">
+					<span class="hero-tag d-inline-block mb-3"><i class="bi bi-file-earmark-check me-1.5"></i> Undergraduate & Postgraduate Admissions</span>
+					<h1 class="hero-title mb-3">Admission Guidelines 2026–2027</h1>
+					<p class="fs-5 text-light opacity-90 mb-4" style="max-width: 650px;">Begin your engineering journey at TIT Institute of Technology. Explore degree prerequisites, application deadlines, fee structure, and document requirements.</p>
+					<div class="d-flex flex-wrap gap-3">
+						<a href="#apply-now" class="btn btn-academic-primary btn-lg px-4 py-2.5 fs-6">Start Online Application <i class="bi bi-arrow-right ms-2"></i></a>
+						<a href="#timeline" class="btn btn-outline-light btn-lg px-4 py-2.5 fs-6">View Admission Timeline</a>
+					</div>
+				</div>
+				<div class="col-lg-4 text-center">
+					<div class="academic-card bg-white text-dark p-4 shadow-elevated">
+						<h6 class="fw-bold mb-1 text-primary text-uppercase tracking-wider small">Key Deadline</h6>
+						<h3 class="fw-extrabold mb-2">31 AUGUST 2026</h3>
+						<p class="text-muted small mb-3">Final date for Phase 1 Online Seat Allocation & Counseling Registration.</p>
+						<a href="#apply-now" class="btn btn-academic-navy w-100">Apply Now</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-</p>
+	<!-- Timeline Section -->
+	<section class="py-6 bg-white" id="timeline">
+		<div class="container">
+			<div class="text-center max-w-2xl mx-auto mb-5">
+				<span class="text-primary fw-bold text-uppercase tracking-wider small">Step-by-Step Guidance</span>
+				<h2 class="fw-extrabold fs-2 mt-1">Admission Process Timeline</h2>
+			</div>
+
+			<div class="row g-4 justify-content-center">
+				<div class="col-lg-10">
+					<div class="admission-timeline">
+						<div class="timeline-step">
+							<div class="timeline-number">01</div>
+							<div class="academic-card p-4">
+								<h5 class="fw-bold mb-1">01 → Explore Program</h5>
+								<p class="text-muted mb-0">Browse through our accredited B.Tech, M.Tech, and Ph.D. degree specializations in CSE, AI & DS, Cyber Security, ECE, Mechanical, and Civil Engineering.</p>
+							</div>
+						</div>
+						<div class="timeline-step">
+							<div class="timeline-number">02</div>
+							<div class="academic-card p-4">
+								<h5 class="fw-bold mb-1">02 → Check Eligibility</h5>
+								<p class="text-muted mb-0">Verify minimum academic aggregate scores (60%+ in Higher Secondary / 10+2 with Physics, Chemistry, Mathematics) or valid GATE scores for postgraduates.</p>
+							</div>
+						</div>
+						<div class="timeline-step">
+							<div class="timeline-number">03</div>
+							<div class="academic-card p-4">
+								<h5 class="fw-bold mb-1">03 → Apply Online</h5>
+								<p class="text-muted mb-0">Fill out the official EDU Portal online application form, upload academic marksheets, and submit the processing fee online.</p>
+							</div>
+						</div>
+						<div class="timeline-step">
+							<div class="timeline-number">04</div>
+							<div class="timeline-number bg-success">04</div>
+							<div class="academic-card p-4">
+								<h5 class="fw-bold mb-1">04 → Document Verification</h5>
+								<p class="text-muted mb-0">Attend document verification counselling at campus or via online portal to validate certificates and identity credentials.</p>
+							</div>
+						</div>
+						<div class="timeline-step">
+							<div class="timeline-number bg-navy">05</div>
+							<div class="academic-card p-4">
+								<h5 class="fw-bold mb-1">05 → Admission Confirmation</h5>
+								<p class="text-muted mb-0">Receive official admission allotment letter, pay initial semester tuition fees, and obtain your permanent Student ID & Portal credentials.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Required Documents & Fee Structure -->
+	<section class="py-6 bg-light">
+		<div class="container">
+			<div class="row g-4">
+				<div class="col-lg-6">
+					<div class="academic-card p-4 h-100">
+						<div class="d-flex align-items-center gap-3 mb-3">
+							<div class="brand-badge bg-primary text-white" style="width: 40px; height: 40px;">
+								<i class="bi bi-file-earmark-text"></i>
+							</div>
+							<h5 class="fw-bold mb-0">Required Documents Checklist</h5>
+						</div>
+						<ul class="list-group list-group-flush small">
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> 10th & 12th Standard Mark Sheets (Original + 3 Copies)</li>
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> Transfer Certificate (TC) & Migration Certificate</li>
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> Community Certificate / Category Reservation Certificate (if applicable)</li>
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> National Entrance Exam Scorecard (JEE Main / GATE / State Rank Card)</li>
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> Passport-size Recent Color Photographs (6 Copies)</li>
+							<li class="list-group-item bg-transparent px-0 py-2.5"><i class="bi bi-check-circle-fill text-success me-2"></i> Aadhaar Card / Identity Verification Proof</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="academic-card p-4 h-100">
+						<div class="d-flex align-items-center gap-3 mb-3">
+							<div class="brand-badge bg-navy text-white" style="width: 40px; height: 40px;">
+								<i class="bi bi-currency-rupee"></i>
+							</div>
+							<h5 class="fw-bold mb-0">Fee Structure Overview</h5>
+						</div>
+						<table class="table table-borderless table-sm small mb-3">
+							<thead>
+								<tr class="border-bottom">
+									<th>Program</th>
+									<th>Tuition Fee (Per Sem)</th>
+									<th>Lab & Dev Fee</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="fw-bold">B.Tech (CSE / AI & DS)</td>
+									<td>₹65,000</td>
+									<td>₹12,000</td>
+								</tr>
+								<tr>
+									<td class="fw-bold">B.Tech (ECE / Mech / Civil)</td>
+									<td>₹55,000</td>
+									<td>₹10,000</td>
+								</tr>
+								<tr>
+									<td class="fw-bold">M.Tech (Specializations)</td>
+									<td>₹45,000</td>
+									<td>₹8,000</td>
+								</tr>
+							</tbody>
+						</table>
+						<p class="text-muted small mb-0"><i class="bi bi-info-circle text-primary me-1"></i> Scholarships available for merit holders (CGPA > 9.0) and sports quota candidates.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- FAQ Accordion -->
+	<section class="py-6 bg-white">
+		<div class="container">
+			<div class="text-center max-w-2xl mx-auto mb-4">
+				<h2 class="fw-extrabold fs-2">Frequently Asked Questions</h2>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
+					<div class="accordion" id="admissionFAQ">
+						<div class="accordion-item border mb-2 rounded overflow-hidden">
+							<h2 class="accordion-header" id="faq1">
+								<button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+									What is the eligibility percentage for B.Tech CSE?
+								</button>
+							</h2>
+							<div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#admissionFAQ">
+								<div class="accordion-body text-muted small">
+									Candidates must have completed 10+2 with Physics, Chemistry, and Mathematics as mandatory subjects with a minimum aggregate of 60% marks.
+								</div>
+							</div>
+						</div>
+						<div class="accordion-item border mb-2 rounded overflow-hidden">
+							<h2 class="accordion-header" id="faq2">
+								<button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+									Is there an online portal login issued after admission?
+								</button>
+							</h2>
+							<div id="collapse2" class="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#admissionFAQ">
+								<div class="accordion-body text-muted small">
+									Yes! Upon admission confirmation, every student receives an official EDU Portal Student ID and password to access courses, timetable, attendance, marks, and fee payment receipts online.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{% include "templates/includes/footer.html" %}
+
+</body>
+</html>

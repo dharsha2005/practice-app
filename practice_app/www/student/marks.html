@@ -1,88 +1,214 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
-</head>
-<body>
+{% extends "templates/portal_base.html" %}
 
-	{% include "templates/includes/navbar.html" %}
-
-	<!-- Portal Subnav -->
-	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
-		<div class="container">
-			<ul class="nav nav-pills py-2 gap-2">
-				<li class="nav-item"><a class="nav-link" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
-				<li class="nav-item"><a class="nav-link active" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
-				<li class="nav-item"><a class="nav-link" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
-			</ul>
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
 		</div>
 	</div>
 
-	<section class="py-5">
-		<div class="container">
-			<div class="glass-card p-4 mb-4">
-				<div class="row align-items-center">
-					<div class="col-md-6">
-						<h4 class="fw-bold mb-1"><i class="bi bi-award text-primary me-2"></i> Academic Performance</h4>
-						<p class="text-muted small mb-0">Current Semester Internal Marks & Grades.</p>
-					</div>
-					<div class="col-md-6 text-md-end mt-3 mt-md-0">
-						<span class="fs-2 fw-bold text-primary me-2">{{ cgpa }}</span>
-						<span class="badge {{ classification_badge_class or 'bg-primary-subtle text-primary' }}">{{ classification or 'First Class with Distinction' }}</span>
-					</div>
-				</div>
-			</div>
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link active"><i class="bi bi-award"></i> Results</a>
 
-			<!-- Marks Table -->
-			<div class="glass-card p-4">
-				<h5 class="fw-bold mb-3">Mark Sheet</h5>
-				<div class="table-responsive">
-					<table class="table align-middle">
-						<thead>
-							<tr>
-								<th>Subject</th>
-								<th>Exam Type</th>
-								<th>Total Marks</th>
-								<th>Obtained Marks</th>
-								<th>Grade</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for item in marks_list %}
-							<tr>
-								<td class="fw-semibold">{{ item.subject }}</td>
-								<td><span class="badge bg-secondary-subtle text-secondary">{{ item.exam_type }}</span></td>
-								<td>{{ item.total_marks }}</td>
-								<td class="fw-bold">{{ item.obtained_marks }}</td>
-								<td>
-									{% if "Fail" in item.grade %}
-									<span class="badge bg-danger-subtle text-danger">{{ item.grade }}</span>
-									{% elif "Outstanding" in item.grade or "Excellent" in item.grade or "Very Good" in item.grade %}
-									<span class="badge bg-success-subtle text-success">{{ item.grade }}</span>
-									{% else %}
-									<span class="badge bg-primary-subtle text-primary">{{ item.grade }}</span>
-									{% endif %}
-								</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+		<div class="sidebar-group-title">SERVICES</div>
+		<a href="/student/certificates" class="sidebar-link"><i class="bi bi-award-fill"></i> Certificates</a>
+		<a href="/student/leave" class="sidebar-link"><i class="bi bi-calendar-minus"></i> Leave Application</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Grade Sheet & Academic Results</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Semester Metric Banner -->
+		<div class="academic-card p-4 mb-4 bg-white">
+			<div class="row align-items-center g-4">
+				<div class="col-md-6">
+					<div class="d-flex align-items-center gap-2 mb-2">
+						<span class="badge bg-primary text-white font-semibold" id="currentSemesterBadge">Semester {{ max_allowed_sem }} Examination</span>
+						<span class="badge bg-success-subtle text-success font-semibold"><i class="bi bi-person-check me-1"></i> Current Student: {{ student.student_name or 'Student' }}</span>
+					</div>
+					<h3 class="fw-extrabold mb-1">Grade Point Summary</h3>
+					<p class="text-muted small mb-0">Department of {{ student.department or 'Computer Science & Engineering' }} &bull; B.Tech Progression</p>
+				</div>
+				<div class="col-md-6">
+					<div class="row g-3 text-center">
+						<div class="col-4">
+							<div class="p-3 rounded bg-light border">
+								<small class="text-muted font-semibold fs-7 d-block">SGPA</small>
+								<span class="stat-number text-primary fs-3" id="displaySgpa">
+									{% set first_sem_key = semesters.keys() | list | first %}
+									{{ semesters[first_sem_key].sgpa if first_sem_key else '—' }}
+								</span>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="p-3 rounded bg-light border">
+								<small class="text-muted font-semibold fs-7 d-block">CGPA</small>
+								<span class="stat-number text-success fs-3">{{ cgpa if cgpa else '—' }}</span>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="p-3 rounded bg-light border">
+								<small class="text-muted font-semibold fs-7 d-block">CREDITS</small>
+								<span class="stat-number text-navy fs-3" id="displayCredits">
+									{% set first_sem_key = semesters.keys() | list | first %}
+									{{ semesters[first_sem_key].credits if first_sem_key else '—' }}
+								</span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</section>
 
-	{% include "templates/includes/footer.html" %}
+		{% if max_allowed_sem == 1 %}
+		<div class="alert alert-info py-2 px-3 small mb-4 d-flex align-items-center">
+			<i class="bi bi-info-circle-fill me-2 fs-5 text-info"></i>
+			<div>
+				<strong>Enrolled Progression: Semester 1</strong> &bull; You are currently enrolled in your first semester. Marks for future semesters (Semester 2 to 8) will become accessible upon academic progression.
+			</div>
+		</div>
+		{% endif %}
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/practice_app/js/student_portal.js"></script>
-</body>
-</html>
+		{% if has_marks %}
+		<!-- Interactive Semester Selector Pills (ONLY ALLOWED SEMESTERS <= max_allowed_sem) -->
+		<div class="d-flex flex-wrap gap-2 mb-4" id="semesterPillGroup">
+			{% for sem_name, sem_info in semesters.items() %}
+			<button class="btn {{ 'btn-academic-navy active' if loop.last else 'btn-academic-outline' }} btn-sm px-3 sem-pill-btn"
+				data-sem="{{ sem_name }}"
+				data-sgpa="{{ sem_info.sgpa }}"
+				data-credits="{{ sem_info.credits }}">{{ sem_name }}</button>
+			{% endfor %}
+		</div>
+
+		<!-- Grade Sheet Table -->
+		<div class="academic-card p-4 bg-white">
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h6 class="fw-bold mb-0">Subject Grade Breakdown — <span id="activeSemLabel">{{ current_sem_title }}</span></h6>
+				<button class="btn btn-academic-outline btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i> Print Grade Sheet</button>
+			</div>
+
+			{% for sem_name, sem_info in semesters.items() %}
+			<div class="table-responsive semester-table-container {{ 'd-none' if not loop.last else '' }}" id="table-{{ sem_name | replace(' ', '-') }}">
+				<table class="table align-middle">
+					<thead>
+						<tr>
+							<th>Subject Code &amp; Title</th>
+							<th>Exam Type</th>
+							<th>Total Marks</th>
+							<th>Obtained Marks</th>
+							<th>Grade</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in sem_info.subjects %}
+						<tr>
+							<td class="fw-bold text-dark">{{ item.subject }}</td>
+							<td><span class="badge bg-light text-dark border">{{ item.exam_type }}</span></td>
+							<td class="fw-semibold">{{ item.total_marks }}</td>
+							<td class="fw-bold text-success">{{ item.obtained_marks }}</td>
+							<td>
+								{% if item.grade and 'Fail' in item.grade %}
+								<span class="badge bg-danger text-white">{{ item.grade }}</span>
+								{% elif item.grade and ('A+' in item.grade or item.grade.startswith('A') or 'O' in item.grade) %}
+								<span class="badge bg-success text-white">{{ item.grade }}</span>
+								{% else %}
+								<span class="badge bg-primary text-white">{{ item.grade or '—' }}</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			{% endfor %}
+		</div>
+		{% else %}
+		<!-- Empty state: no marks in DocType yet -->
+		<div class="text-center py-5">
+			<div class="academic-card p-5 bg-white d-inline-block" style="max-width:420px;">
+				<i class="bi bi-mortarboard fs-1 text-muted d-block mb-3"></i>
+				<h5 class="fw-bold">No Results Published Yet</h5>
+				<p class="text-muted small mb-0">Marks for {{ current_sem_title }} have not been published by your faculty. Please check back after your examinations.</p>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item active"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const pillBtns = document.querySelectorAll("#semesterPillGroup .sem-pill-btn");
+		const tableContainers = document.querySelectorAll(".semester-table-container");
+		const badge = document.getElementById("currentSemesterBadge");
+		const sgpaEl = document.getElementById("displaySgpa");
+		const creditsEl = document.getElementById("displayCredits");
+
+		pillBtns.forEach(btn => {
+			btn.addEventListener("click", function() {
+				pillBtns.forEach(b => {
+					b.classList.remove("btn-academic-navy", "active");
+					b.classList.add("btn-academic-outline");
+				});
+				this.classList.remove("btn-academic-outline");
+				this.classList.add("btn-academic-navy", "active");
+
+				const semName = this.getAttribute("data-sem");
+				const sgpa = this.getAttribute("data-sgpa");
+				const credits = this.getAttribute("data-credits");
+
+				if (badge) badge.textContent = semName + " Examination";
+				if (sgpaEl) sgpaEl.textContent = sgpa;
+				if (creditsEl) creditsEl.textContent = credits;
+
+				const targetTableId = "table-" + semName.replace(/\s+/g, '-');
+				tableContainers.forEach(container => {
+					if (container.id === targetTableId) {
+						container.classList.remove("d-none");
+					} else {
+						container.classList.add("d-none");
+					}
+				});
+			});
+		});
+	});
+</script>
+{% endblock %}

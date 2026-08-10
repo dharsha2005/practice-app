@@ -1,75 +1,116 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
+	<title>Student Portal Login | TIT Institute of Technology</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
-	<style>
-		.login-wrapper {
-			min-height: calc(100vh - 75px - 100px);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 3rem 1rem;
-		}
-		.login-card {
-			width: 100%;
-			max-width: 440px;
-			padding: 2.5rem;
-		}
-	</style>
 </head>
-<body>
+<body class="bg-light">
 
-	{% include "templates/includes/navbar.html" %}
-
-	<div class="login-wrapper">
-		<div class="glass-card login-card animate-fade-in">
-			<div class="text-center mb-4">
-				<div class="bg-primary text-white rounded-3 p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
-					<i class="bi bi-mortarboard-fill fs-3"></i>
+	<div class="container-fluid p-0 min-vh-100 d-flex flex-column justify-content-between">
+		<!-- Top Simple Navbar -->
+		<nav class="navbar navbar-light bg-white border-bottom px-4 py-3">
+			<a class="navbar-brand d-flex align-items-center me-4" href="/">
+				<div class="brand-badge me-2.5">
+					<i class="bi bi-mortarboard-fill"></i>
 				</div>
-				<h3 class="fw-bold mb-1">Portal Login</h3>
-				<p class="text-muted small">Access your Student & Staff Academic Dashboard</p>
+				<div>
+					<span class="fw-extrabold fs-5 text-dark d-block leading-tight">TIT <span class="text-primary">Engineering</span></span>
+					<span class="text-muted small fs-7 d-block" style="font-size: 0.725rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Institute of Technology</span>
+				</div>
+			</a>
+			<a href="/" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Back to Website</a>
+		</nav>
+
+		<!-- Split Screen Login Layout -->
+		<div class="row g-0 flex-grow-1 align-items-center justify-content-center py-5">
+			<!-- Form Column -->
+			<div class="col-lg-5 col-md-8 px-4 px-md-5">
+				<div class="academic-card p-4 p-md-5 shadow-elevated mx-auto" style="max-width: 440px;">
+					<div class="text-center mb-4">
+						<div class="brand-badge bg-navy text-white mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.5rem;">
+							<i class="bi bi-person-workspace"></i>
+						</div>
+						<span class="badge bg-primary-subtle text-primary font-semibold px-3 py-1 rounded-pill mb-2">EDU PORTAL</span>
+						<h3 class="fw-extrabold mb-1">Student Login</h3>
+						<p class="text-muted small">Enter your Student ID or Academic Email to access your portal</p>
+					</div>
+
+					<form id="portal-login-form">
+						<div class="mb-3">
+							<label class="form-label fw-semibold text-muted small">Student ID / Email</label>
+							<div class="input-group">
+								<span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-card-heading"></i></span>
+								<input type="text" name="usr" id="login-email" class="form-control border-start-0 py-2.5" required placeholder="e.g. CS2026-042 or student@edu.in" autocomplete="username">
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<div class="d-flex justify-content-between align-items-center mb-1">
+								<label class="form-label fw-semibold text-muted small mb-0">Password</label>
+								<a href="#" class="text-primary small text-decoration-none font-semibold">Forgot Password?</a>
+							</div>
+							<div class="input-group">
+								<span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-shield-lock"></i></span>
+								<input type="password" name="pwd" id="login-password" class="form-control border-start-0 border-end-0 py-2.5" required placeholder="••••••••" autocomplete="current-password">
+								<button class="btn btn-outline-secondary border-start-0 bg-white" type="button" id="toggle-password-btn"><i class="bi bi-eye"></i></button>
+							</div>
+						</div>
+
+						<div id="login-alert" class="alert d-none py-2 px-3 mb-3 small"></div>
+
+						<button type="submit" id="login-submit-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold mb-3 fs-6">
+							Login <i class="bi bi-box-arrow-in-right ms-1"></i>
+						</button>
+					</form>
+
+					<div class="text-center border-top pt-3 text-muted small">
+						Need Help? Contact <a href="/contact" class="text-primary font-semibold text-decoration-none">IT Support Cell</a>
+					</div>
+				</div>
 			</div>
 
-			<form id="portal-login-form">
-				<div class="mb-3">
-					<label class="form-label fw-semibold text-muted small">Email Address / User ID</label>
-					<div class="input-group">
-						<span class="input-group-text bg-transparent border-end-0"><i class="bi bi-envelope text-primary"></i></span>
-						<input type="text" name="usr" id="login-email" class="form-control border-start-0 py-2" required placeholder="student@example.com" autocomplete="username">
+			<!-- Technical Visual Column (Desktop) -->
+			<div class="col-lg-7 d-none d-lg-block px-5">
+				<div class="p-5 rounded-lg position-relative text-white overflow-hidden shadow-elevated" style="background: linear-gradient(135deg, var(--navy-primary) 0%, #1e293b 100%); min-height: 520px; display: flex; flex-direction: column; justify-content: space-between;">
+					<div class="position-relative" style="z-index: 2;">
+						<span class="hero-tag d-inline-block mb-3"><i class="bi bi-cpu-fill me-1.5"></i> Single Sign-On Access</span>
+						<h2 class="hero-title display-6 mb-3">Unified Student Academic Workstation</h2>
+						<p class="text-light opacity-90 fs-6 max-w-xl">Access real-time CGPA analytics, subject attendance tracking, course syllabi, laboratory manuals, examination schedules, and fee receipts in one place.</p>
+					</div>
+
+					<div class="row g-3 position-relative" style="z-index: 2;">
+						<div class="col-4">
+							<div class="p-3 rounded bg-white bg-opacity-10 border border-white border-opacity-10">
+								<h6 class="fw-bold mb-0 text-info">Real-time</h6>
+								<small class="text-light opacity-75">Attendance Alerts</small>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="p-3 rounded bg-white bg-opacity-10 border border-white border-opacity-10">
+								<h6 class="fw-bold mb-0 text-info">Instant</h6>
+								<small class="text-light opacity-75">Result Notifications</small>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="p-3 rounded bg-white bg-opacity-10 border border-white border-opacity-10">
+								<h6 class="fw-bold mb-0 text-info">Digital</h6>
+								<small class="text-light opacity-75">Certificate Downloads</small>
+							</div>
+						</div>
 					</div>
 				</div>
-
-				<div class="mb-4">
-					<div class="d-flex justify-content-between align-items-center mb-1">
-						<label class="form-label fw-semibold text-muted small mb-0">Password</label>
-					</div>
-					<div class="input-group">
-						<span class="input-group-text bg-transparent border-end-0"><i class="bi bi-lock text-primary"></i></span>
-						<input type="password" name="pwd" id="login-password" class="form-control border-start-0 py-2" required placeholder="••••••••" autocomplete="current-password">
-						<button class="btn btn-outline-secondary border-start-0" type="button" id="toggle-password-btn"><i class="bi bi-eye"></i></button>
-					</div>
-				</div>
-
-				<div id="login-alert" class="alert d-none py-2 px-3 mb-3 small"></div>
-
-				<button type="submit" id="login-submit-btn" class="btn btn-primary-gradient w-100 py-2.5 fw-semibold mb-3">
-					Sign In <i class="bi bi-box-arrow-in-right ms-1"></i>
-				</button>
-			</form>
-
-			<div class="text-center border-top pt-3 text-muted small">
-				New Student Admissions? <a href="/contact" class="text-primary fw-semibold text-decoration-none">Enquire Here</a>
 			</div>
 		</div>
-	</div>
 
-	{% include "templates/includes/footer.html" %}
+		<!-- Footer -->
+		<footer class="py-3 bg-white border-top text-center small text-muted">
+			&copy; 2026 TIT Institute of Technology. All rights reserved. Powered by EDU Portal Engine.
+		</footer>
+	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
@@ -93,7 +134,7 @@
 					e.preventDefault();
 					
 					submitBtn.disabled = true;
-					submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing in...';
+					submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
 					alertBox.className = "alert d-none py-2 px-3 mb-3 small";
 
 					const formData = new FormData(loginForm);
@@ -102,30 +143,26 @@
 					fetch("/api/method/login", {
 						method: "POST",
 						body: formData,
-						headers: {
-							"Accept": "application/json"
-						}
+						headers: { "Accept": "application/json" }
 					})
 					.then(response => {
-						if (!response.ok) {
-							throw new Error("Invalid credentials");
-						}
+						if (!response.ok) throw new Error("Invalid credentials");
 						return response.json();
 					})
 					.then(data => {
 						if (data.message === "Logged In" || data.home_page) {
 							alertBox.className = "alert alert-success py-2 px-3 mb-3 small d-block";
-							alertBox.textContent = "Success! Redirecting...";
-							window.location.href = data.home_page || "/app";
+							alertBox.textContent = "Success! Opening Portal...";
+							window.location.href = "/student";
 						} else {
 							throw new Error("Authentication failed");
 						}
 					})
 					.catch(error => {
 						submitBtn.disabled = false;
-						submitBtn.innerHTML = 'Sign In <i class="bi bi-box-arrow-in-right ms-1"></i>';
+						submitBtn.innerHTML = 'Login <i class="bi bi-box-arrow-in-right ms-1"></i>';
 						alertBox.className = "alert alert-danger py-2 px-3 mb-3 small d-block";
-						alertBox.textContent = "Invalid username or password. Please try again.";
+						alertBox.textContent = "Invalid Student ID or password. Please try again.";
 					});
 				});
 			}

@@ -1,0 +1,230 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+
+		<div class="sidebar-group-title">SERVICES</div>
+		<a href="/student/certificates" class="sidebar-link active"><i class="bi bi-award-fill"></i> Certificates</a>
+		<a href="/student/leave" class="sidebar-link"><i class="bi bi-calendar-minus"></i> Leave Application</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Certificate Requests &amp; Issued Documents</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Summary Cards -->
+		<div class="row g-3 mb-4">
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center border rounded">
+					<div class="stat-number text-primary fs-3 fw-bold">{{ total_count or 0 }}</div>
+					<small class="text-muted fw-semibold">Total Requests</small>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center border rounded">
+					<div class="stat-number text-warning fs-3 fw-bold">{{ pending_count or 0 }}</div>
+					<small class="text-muted fw-semibold">Pending Approval</small>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="academic-card p-3 bg-white text-center border rounded">
+					<div class="stat-number text-success fs-3 fw-bold">{{ issued_count or 0 }}</div>
+					<small class="text-muted fw-semibold">Issued Certificates</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+			<div>
+				<h4 class="fw-extrabold mb-1">Official Academic Certificates</h4>
+				<p class="text-muted small mb-0">Request Bonafide, Transfer, Conduct, or Course Completion Certificates.</p>
+			</div>
+			<button class="btn btn-academic-primary btn-sm" data-bs-toggle="modal" data-bs-target="#requestCertModal"><i class="bi bi-plus-lg me-1"></i> Request New Certificate</button>
+		</div>
+
+		<div class="academic-card p-4 bg-white border rounded">
+			<div class="table-responsive">
+				<table class="table align-middle">
+					<thead>
+						<tr>
+							<th>Request Ref</th>
+							<th>Certificate Type</th>
+							<th>Request / Issue Date</th>
+							<th>Status</th>
+							<th>Document File</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for cert in certificates %}
+						<tr>
+							<td class="fw-bold text-primary">{{ cert.name }}</td>
+							<td class="fw-semibold">{{ cert.certificate_type }}</td>
+							<td>{{ cert.issue_date or '—' }}</td>
+							<td>
+								{% if cert.status == 'Issued' %}
+								<span class="badge bg-success text-white px-2.5 py-1">Issued</span>
+								{% elif cert.status == 'Pending' %}
+								<span class="badge bg-warning text-dark px-2.5 py-1">Pending Approval</span>
+								{% else %}
+								<span class="badge bg-secondary text-white px-2.5 py-1">{{ cert.status }}</span>
+								{% endif %}
+							</td>
+							<td>
+								{% if cert.certificate_file %}
+								<a href="{{ cert.certificate_file }}" target="_blank" class="btn btn-academic-outline btn-sm"><i class="bi bi-download me-1"></i> Download PDF</a>
+								{% else %}
+								<span class="text-muted small"><i class="bi bi-clock me-1"></i> Processing</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% else %}
+						<tr>
+							<td colspan="5" class="text-center py-5 text-muted">
+								<i class="bi bi-award fs-2 d-block mb-2 text-muted"></i>
+								No certificate requests found. Click "Request New Certificate" to apply.
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Request Certificate Modal -->
+<div class="modal fade" id="requestCertModal" tabindex="-1" aria-labelledby="requestCertModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom bg-primary text-white">
+				<h5 class="modal-title fw-bold" id="requestCertModalLabel"><i class="bi bi-award me-2"></i> Request Academic Certificate</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="cert-request-form">
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Certificate Category</label>
+						<select id="modal-cert-type" class="form-select" required>
+							<option value="Bonafide Certificate">Bonafide Certificate</option>
+							<option value="Course Completion Certificate">Course Completion Certificate</option>
+							<option value="Conduct Certificate">Conduct Certificate</option>
+							<option value="Transfer Certificate">Transfer Certificate</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Purpose / Reason</label>
+						<textarea id="modal-cert-reason" class="form-control" rows="3" placeholder="Specify reason for request (Passport, Bank Loan, Higher Studies...)" required></textarea>
+					</div>
+
+					<div id="cert-alert" class="alert d-none py-2 px-3 small"></div>
+
+					<button type="submit" id="submit-cert-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold">Submit Certificate Request</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		function getCsrfToken() {
+			const match = document.cookie.match(/csrf_token=([^;]+)/);
+			return match ? decodeURIComponent(match[1]) : "";
+		}
+
+		const form = document.getElementById("cert-request-form");
+		if (form) {
+			form.addEventListener("submit", async function(e) {
+				e.preventDefault();
+				const btn = document.getElementById("submit-cert-btn");
+				const alertBox = document.getElementById("cert-alert");
+				const certType = document.getElementById("modal-cert-type").value;
+				const reason = document.getElementById("modal-cert-reason").value;
+
+				btn.disabled = true;
+				btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting Request...';
+				alertBox.className = "alert d-none py-2 px-3 small";
+
+				try {
+					const resp = await fetch("/api/method/practice_app.api.submit_certificate_request", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"X-Frappe-CSRF-Token": getCsrfToken()
+						},
+						body: JSON.stringify({
+							certificate_type: certType,
+							reason: reason
+						})
+					});
+					const data = await resp.json();
+					const result = data.message || data;
+
+					if (result.status === "success") {
+						alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+						alertBox.textContent = result.message || "Certificate request submitted successfully!";
+						setTimeout(() => {
+							const modal = bootstrap.Modal.getInstance(document.getElementById("requestCertModal"));
+							if (modal) modal.hide();
+							window.location.reload();
+						}, 1200);
+					} else {
+						throw new Error(result.message || "Submission failed.");
+					}
+				} catch (err) {
+					btn.disabled = false;
+					btn.innerHTML = "Submit Certificate Request";
+					alertBox.className = "alert alert-danger py-2 px-3 small d-block mb-3";
+					alertBox.textContent = "Error: " + (err.message || "Please try again.");
+				}
+			});
+		}
+	});
+</script>
+{% endblock %}

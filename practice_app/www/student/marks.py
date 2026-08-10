@@ -1,6 +1,19 @@
 import frappe
 
+base_template_path = "templates/portal_base.html"
+
+def parse_sem_num(sem_val):
+	"""Extracts integer semester number from string (e.g., '1', 'Semester 5' -> 1, 5)."""
+	if not sem_val:
+		return 1
+	sem_str = str(sem_val).lower().replace("semester", "").strip()
+	try:
+		return int(sem_str)
+	except ValueError:
+		return 1
+
 def get_context(context):
+	context.base_template_path = "templates/portal_base.html"
 	context.title = "Marks & Grades - EduPortal"
 	user = frappe.session.user
 	
@@ -16,51 +29,93 @@ def get_context(context):
 
 	req_student = frappe.form_dict.get("student")
 	
-	if req_student and ("System Manager" in frappe.get_roles(user) or "Administrator" in frappe.get_roles(user)):
-		student_doc = frappe.db.get_value("Student-form", {"name": req_student}, ["name", "cgpa"], as_dict=True)
+	if req_student and ("System Manager" in roles or "Administrator" in roles):
+		student_doc = frappe.db.get_value("Student-form", {"name": req_student}, ["name", "student_name", "department", "semester", "cgpa"], as_dict=True)
 	else:
-		student_doc = frappe.db.get_value("Student-form", {"email": user}, ["name", "cgpa"], as_dict=True) or frappe.db.get_value("Student-form", {"owner": user}, ["name", "cgpa"], as_dict=True)
+		student_doc = (
+			frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name", "department", "semester", "cgpa"], as_dict=True)
+			or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name", "department", "semester", "cgpa"], as_dict=True)
+		)
 	
-	if student_doc:
-		context.marks_list = frappe.get_all(
+	student_id = student_doc.get("name") if student_doc else None
+	raw_sem = student_doc.get("semester") if student_doc else "1"
+	max_allowed_sem = parse_sem_num(raw_sem)
+
+	# === FETCH MARKS STRICTLY FROM Marks DocType ===
+	# Only show marks for semesters <= student's current semester (REAL-TIME boundary)
+	raw_marks = []
+	if student_id:
+		raw_marks = frappe.get_all(
 			"Marks",
-			filters={"student": student_doc.get("name")},
-			fields=["subject", "exam_type", "total_marks", "obtained_marks", "grade"],
-			order_by="modified desc"
+			filters={"student": student_id},
+			fields=["name", "semester", "subject", "exam_type", "total_marks", "obtained_marks", "grade"],
+			order_by="semester asc, subject asc"
 		)
 
-		has_fail = any("Fail" in (m.get("grade") or "") or float(m.get("obtained_marks") or 0) < 40 for m in context.marks_list)
-		
-		if context.marks_list:
-			calc_cgpa = round(sum((float(m.get("obtained_marks") or 0) / float(m.get("total_marks") or 100)) * 10 for m in context.marks_list) / len(context.marks_list), 2)
-			context.cgpa = calc_cgpa
-			if student_doc.get("name"):
-				frappe.db.set_value("Student-form", student_doc.get("name"), "cgpa", calc_cgpa)
-		else:
-			context.cgpa = float(student_doc.get("cgpa") or 0.0)
+	# Group marks by semester, strictly filtering out future semesters
+	semesters_data = {}
+	for m in raw_marks:
+		sem_str = m.get("semester") or "Semester 1"
+		s_num = parse_sem_num(sem_str)
+		# STRICT: only include semesters the student has completed or is currently in
+		if s_num > max_allowed_sem:
+			continue
+		key = f"Semester {s_num}"
+		if key not in semesters_data:
+			semesters_data[key] = {"sem_num": s_num, "subjects": []}
+		semesters_data[key]["subjects"].append({
+			"subject": m.get("subject"),
+			"exam_type": m.get("exam_type") or "Regular",
+			"total_marks": m.get("total_marks") or 100,
+			"obtained_marks": m.get("obtained_marks") or 0,
+			"grade": m.get("grade") or "-"
+		})
 
-		if has_fail:
-			context.classification = "Arrear / Reappear Required"
-			context.classification_badge_class = "bg-danger-subtle text-danger"
-		elif context.cgpa >= 8.5:
-			context.classification = "First Class with Distinction"
-			context.classification_badge_class = "bg-primary-subtle text-primary"
-		elif context.cgpa >= 7.0:
-			context.classification = "First Class"
-			context.classification_badge_class = "bg-success-subtle text-success"
-		elif context.cgpa >= 5.5:
-			context.classification = "Second Class"
-			context.classification_badge_class = "bg-info-subtle text-info"
-		elif context.cgpa >= 4.0:
-			context.classification = "Pass Class"
-			context.classification_badge_class = "bg-warning-subtle text-warning"
+	# Compute SGPA per semester from actual marks
+	for sem_key, sem_val in semesters_data.items():
+		subjs = sem_val["subjects"]
+		if subjs:
+			total_obtained = sum(float(s["obtained_marks"]) for s in subjs)
+			total_possible = sum(float(s["total_marks"]) for s in subjs)
+			sgpa = round((total_obtained / total_possible) * 10, 2) if total_possible > 0 else 0.0
+			# Credits: count of subjects * 3 (standard credit assumption)
+			credits = len(subjs) * 3
 		else:
-			context.classification = "Needs Improvement"
-			context.classification_badge_class = "bg-danger-subtle text-danger"
+			sgpa = 0.0
+			credits = 0
+		sem_val["sgpa"] = sgpa
+		sem_val["credits"] = credits
+
+	# Sort semesters in ascending order
+	allowed_semesters = dict(
+		sorted(semesters_data.items(), key=lambda x: x[1]["sem_num"])
+	)
+
+	# Compute overall CGPA from all marks
+	all_obtained = []
+	all_total = []
+	for sem_val in allowed_semesters.values():
+		for s in sem_val["subjects"]:
+			all_obtained.append(float(s["obtained_marks"]))
+			all_total.append(float(s["total_marks"]))
+
+	if all_obtained and all_total:
+		cgpa = round((sum(all_obtained) / sum(all_total)) * 10, 2)
 	else:
-		context.marks_list = []
-		context.cgpa = 0.0
-		context.classification = "No Records"
-		context.classification_badge_class = "bg-secondary-subtle text-secondary"
+		cgpa = student_doc.get("cgpa") or 0.0
 
+	# Update CGPA in Student-form if we computed it from real data
+	if student_id and all_obtained:
+		try:
+			frappe.db.set_value("Student-form", student_id, "cgpa", cgpa)
+			frappe.db.commit()
+		except Exception:
+			pass
+
+	context.student = student_doc or {}
+	context.max_allowed_sem = max_allowed_sem
+	context.current_sem_title = f"Semester {max_allowed_sem}"
+	context.semesters = allowed_semesters
+	context.cgpa = cgpa
+	context.has_marks = bool(allowed_semesters)
 	return context

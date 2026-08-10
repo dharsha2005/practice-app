@@ -1,0 +1,127 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+<!-- Sidebar Navigation -->
+<aside class="portal-sidebar" id="portalSidebar">
+	<div class="sidebar-header d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-2">
+			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
+				<i class="bi bi-mortarboard-fill"></i>
+			</div>
+			<div>
+				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+				<small class="text-muted fs-7">Academic System</small>
+			</div>
+		</div>
+	</div>
+
+	<div class="py-2">
+		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+		<div class="sidebar-group-title">ACADEMICS</div>
+		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
+		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
+		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
+
+		<div class="sidebar-group-title">ACCOUNT</div>
+		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
+		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
+		<a href="/student/settings" class="sidebar-link active"><i class="bi bi-gear"></i> Settings</a>
+	</div>
+
+	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
+		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
+	</div>
+</aside>
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Portal & Security Preferences</h5>
+		</div>
+		<a href="/student" class="btn btn-academic-outline btn-sm"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<div class="academic-card p-4 mb-4 bg-white">
+			<h5 class="fw-bold mb-1"><i class="bi bi-shield-lock text-primary me-2"></i> Account Security & Preferences</h5>
+			<p class="text-muted small mb-0">Update login password, notification preferences, and security options.</p>
+		</div>
+
+		<div class="row g-4">
+			<div class="col-lg-6">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Change Password</h6>
+					<form id="change-pass-form">
+						<div class="mb-3">
+							<label class="form-label small fw-semibold text-muted">Current Password</label>
+							<input type="password" class="form-control" required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label small fw-semibold text-muted">New Password</label>
+							<input type="password" class="form-control" required minlength="6">
+						</div>
+						<div class="mb-3">
+							<label class="form-label small fw-semibold text-muted">Confirm New Password</label>
+							<input type="password" class="form-control" required minlength="6">
+						</div>
+						<div id="pass-alert" class="alert d-none py-2 px-3 small"></div>
+						<button type="submit" id="save-pass-btn" class="btn btn-academic-primary w-100 py-2">Update Password</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Notification Preferences</h6>
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input" type="checkbox" id="emailNotifSwitch" checked>
+						<label class="form-check-label font-semibold text-dark" for="emailNotifSwitch">Email Alerts via Resend API</label>
+						<small class="text-muted d-block">Receive assignment and exam schedule alerts directly to your registered email.</small>
+					</div>
+
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input" type="checkbox" id="smsNotifSwitch" checked>
+						<label class="form-check-label font-semibold text-dark" for="smsNotifSwitch">Attendance Warning Alerts</label>
+						<small class="text-muted d-block">Get real-time warning alerts if attendance drops below 75% threshold.</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const form = document.getElementById("change-pass-form");
+		if (form) {
+			form.addEventListener("submit", function(e) {
+				e.preventDefault();
+				const btn = document.getElementById("save-pass-btn");
+				const alertBox = document.getElementById("pass-alert");
+				btn.disabled = true;
+				btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+				setTimeout(() => {
+					btn.disabled = false;
+					btn.innerHTML = 'Update Password';
+					alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+					alertBox.textContent = "Account password updated successfully!";
+					setTimeout(() => alertBox.className = "alert d-none", 2000);
+				}, 1000);
+			});
+		}
+	});
+</script>
+{% endblock %}

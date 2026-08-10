@@ -1,0 +1,1 @@
+# Leave Application DocType init

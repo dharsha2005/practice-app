@@ -1,6 +1,9 @@
 import frappe
 
+base_template_path = "templates/portal_base.html"
+
 def get_context(context):
+	context.base_template_path = "templates/portal_base.html"
 	context.title = "Fee Details - EduPortal"
 	user = frappe.session.user
 	

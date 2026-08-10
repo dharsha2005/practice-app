@@ -51,7 +51,17 @@ website_route_rules = [
 	{"from_route": "/student/marks", "to_route": "student/marks"},
 	{"from_route": "/student/fees", "to_route": "student/fees"},
 	{"from_route": "/student/notifications", "to_route": "student/notifications"},
+	{"from_route": "/student/courses", "to_route": "student/courses"},
+	{"from_route": "/student/timetable", "to_route": "student/timetable"},
+	{"from_route": "/student/assignments", "to_route": "student/assignments"},
+	{"from_route": "/student/materials", "to_route": "student/materials"},
+	{"from_route": "/student/announcements", "to_route": "student/announcements"},
+	{"from_route": "/student/leave", "to_route": "student/leave"},
+	{"from_route": "/student/certificates", "to_route": "student/certificates"},
+	{"from_route": "/student/settings", "to_route": "student/settings"},
+	{"from_route": "/student/admission", "to_route": "student/admission"}
 ]
+
 
 # Document Event Hooks for Validations & Workflow Logic
 doc_events = {

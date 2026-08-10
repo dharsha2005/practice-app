@@ -8,6 +8,7 @@
   "marks_info_section",
   "student",
   "student_name",
+  "semester",
   "subject",
   "cb1",
   "exam_type",
@@ -36,6 +37,14 @@
    "in_list_view": 1,
    "label": "Student Name",
    "read_only": 1
+  },
+  {
+   "default": "Semester 5",
+   "fieldname": "semester",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Semester",
+   "options": "Semester 1\nSemester 2\nSemester 3\nSemester 4\nSemester 5\nSemester 6\nSemester 7\nSemester 8"
   },
   {
    "fieldname": "subject",
@@ -82,7 +91,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-07 15:34:00.000000",
+ "modified": "2026-08-10 15:34:00.000000",
  "modified_by": "Administrator",
  "module": "Practice App",
  "name": "Marks",
