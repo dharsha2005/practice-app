@@ -2,6 +2,7 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
+ "autoname": "field:student_name",
  "creation": "2026-08-04 11:50:24.801851",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -14,7 +15,10 @@
   {
    "fieldname": "student_name",
    "fieldtype": "Data",
-   "label": "Student Name"
+   "in_list_view": 1,
+   "label": "Student Name",
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "age",
@@ -31,10 +35,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-04 11:54:30.530113",
- "modified_by": "Administrator",
+ "modified": "2026-08-06 11:25:57.068716",
+ "modified_by": "baladharshan1972@gmail.com",
  "module": "Practice App",
  "name": "practice-manager",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

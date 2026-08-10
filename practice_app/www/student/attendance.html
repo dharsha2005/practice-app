@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
+</head>
+<body>
+
+	{% include "templates/includes/navbar.html" %}
+
+	<!-- Portal Subnav -->
+	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
+		<div class="container">
+			<ul class="nav nav-pills py-2 gap-2">
+				<li class="nav-item"><a class="nav-link" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
+				<li class="nav-item"><a class="nav-link active" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<section class="py-5">
+		<div class="container">
+			<div class="glass-card p-4 mb-4">
+				<div class="row align-items-center">
+					<div class="col-md-6">
+						<h4 class="fw-bold mb-1"><i class="bi bi-calendar-check text-primary me-2"></i> Attendance Summary</h4>
+						<p class="text-muted small mb-0">Minimum required attendance is 75% for exam eligibility.</p>
+					</div>
+					<div class="col-md-6 text-md-end mt-3 mt-md-0">
+						<span class="fs-2 fw-bold text-success me-2">{{ overall_attendance }}%</span>
+						<span class="badge bg-success-subtle text-success">Good Academic Standing</span>
+					</div>
+				</div>
+				<div class="progress mt-3" style="height: 10px;">
+					<div class="progress-bar bg-success" role="progressbar" style="width: {{ overall_attendance }}%;"></div>
+				</div>
+			</div>
+
+			<!-- Attendance Table -->
+			<div class="glass-card p-4">
+				<h5 class="fw-bold mb-3">Daily Attendance Register</h5>
+				<div class="table-responsive">
+					<table class="table align-middle">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Subject</th>
+								<th>Status</th>
+								<th>Remarks</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in attendance_list %}
+							<tr>
+								<td class="fw-semibold">{{ item.date }}</td>
+								<td>{{ item.subject }}</td>
+								<td>
+									{% if item.status == 'Present' %}
+										<span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i> Present</span>
+									{% elif item.status == 'On Leave' %}
+										<span class="badge bg-warning-subtle text-warning"><i class="bi bi-exclamation-triangle me-1"></i> On Leave</span>
+									{% else %}
+										<span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i> Absent</span>
+									{% endif %}
+								</td>
+								<td class="text-muted small">{{ item.remarks }}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{% include "templates/includes/footer.html" %}
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/assets/practice_app/js/student_portal.js"></script>
+</body>
+</html>

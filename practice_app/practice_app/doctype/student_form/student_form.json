@@ -1,0 +1,276 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:student_name",
+ "creation": "2026-08-07 10:31:02.894643",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "image_field": "student_photo",
+ "field_order": [
+  "student_information",
+  "student_name",
+  "register_number",
+  "cb_student",
+  "phone_number",
+  "email",
+  "personal_information",
+  "gender",
+  "blood_group",
+  "cb_personal",
+  "date_of_birth",
+  "age",
+  "academic_information",
+  "department",
+  "year",
+  "cb_academic",
+  "semester",
+  "cgpa",
+  "address_details",
+  "address",
+  "cb_address",
+  "city",
+  "state",
+  "country",
+  "pincode",
+  "parent_information",
+  "father_name",
+  "mother_name",
+  "cb_parent",
+  "parent_phone",
+  "parent_email",
+  "documents",
+  "student_photo",
+  "cb_documents",
+  "aadhaar_number",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "student_information",
+   "fieldtype": "Section Break",
+   "label": "Student Information"
+  },
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "register_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Register Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_student",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Phone",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "personal_information",
+   "fieldtype": "Section Break",
+   "label": "Personal Information"
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Gender",
+   "options": "Male\nFemale\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "blood_group",
+   "fieldtype": "Select",
+   "label": "Blood Group",
+   "options": "A+\nA-\nB+\nB-\nAB+\nAB-\nO+\nO-"
+  },
+  {
+   "fieldname": "cb_personal",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "age",
+   "fieldtype": "Int",
+   "label": "Age"
+  },
+  {
+   "fieldname": "academic_information",
+   "fieldtype": "Section Break",
+   "label": "Academic Information"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "CSE\nIT\nECE\nEEE\nMECH\nCIVIL\nAIDS",
+   "reqd": 1
+  },
+  {
+   "fieldname": "year",
+   "fieldtype": "Select",
+   "label": "Year",
+   "options": "I\nII\nIII\nIV"
+  },
+  {
+   "fieldname": "cb_academic",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "semester",
+   "fieldtype": "Select",
+   "label": "Semester",
+   "options": "1\n2\n3\n4\n5\n6\n7\n8"
+  },
+  {
+   "fieldname": "cgpa",
+   "fieldtype": "Float",
+   "label": "CGPA"
+  },
+  {
+   "fieldname": "address_details",
+   "fieldtype": "Section Break",
+   "label": "Address Details"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "cb_address",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "pincode",
+   "fieldtype": "Data",
+   "label": "Pincode"
+  },
+  {
+   "fieldname": "parent_information",
+   "fieldtype": "Section Break",
+   "label": "Parent Information"
+  },
+  {
+   "fieldname": "father_name",
+   "fieldtype": "Data",
+   "label": "Father Name"
+  },
+  {
+   "fieldname": "mother_name",
+   "fieldtype": "Data",
+   "label": "Mother Name"
+  },
+  {
+   "fieldname": "cb_parent",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parent_phone",
+   "fieldtype": "Phone",
+   "label": "Parent Phone"
+  },
+  {
+   "fieldname": "parent_email",
+   "fieldtype": "Data",
+   "label": "Parent Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "documents",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "student_photo",
+   "fieldtype": "Attach Image",
+   "in_list_view": 1,
+   "label": "Student Photo"
+  },
+  {
+   "fieldname": "cb_documents",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "aadhaar_number",
+   "fieldtype": "Data",
+   "label": "Aadhaar Number"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Student-form",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-08-07 11:00:25.220892",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "Student-form",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

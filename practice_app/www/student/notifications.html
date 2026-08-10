@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
+</head>
+<body>
+
+	{% include "templates/includes/navbar.html" %}
+
+	<!-- Portal Subnav -->
+	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
+		<div class="container">
+			<ul class="nav nav-pills py-2 gap-2">
+				<li class="nav-item"><a class="nav-link" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
+				<li class="nav-item"><a class="nav-link active" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<section class="py-5">
+		<div class="container">
+			<div class="glass-card p-4 mb-4">
+				<h4 class="fw-bold mb-1"><i class="bi bi-bell text-primary me-2"></i> Campus Announcements</h4>
+				<p class="text-muted small mb-0">Official circulars, exam schedules, and academic updates.</p>
+			</div>
+
+			<div class="vstack gap-3">
+				{% for notif in notifications %}
+				<div class="glass-card p-4 border-start border-4 border-primary">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<span class="badge bg-primary-subtle text-primary fw-semibold">{{ notif.category }}</span>
+						<span class="text-muted small"><i class="bi bi-clock me-1"></i> {{ notif.date }}</span>
+					</div>
+					<h5 class="fw-bold mb-2">{{ notif.title }}</h5>
+					<p class="text-muted mb-0">{{ notif.message }}</p>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	{% include "templates/includes/footer.html" %}
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/assets/practice_app/js/student_portal.js"></script>
+</body>
+</html>

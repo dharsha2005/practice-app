@@ -1,0 +1,40 @@
+<div style="width: 320px; border: 2px solid #4f46e5; border-radius: 12px; padding: 16px; background: #ffffff; font-family: sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: auto;">
+	<div style="text-align: center; border-bottom: 2px solid #4f46e5; padding-bottom: 8px; margin-bottom: 12px;">
+		<h4 style="margin: 0; color: #4f46e5; font-weight: bold; text-transform: uppercase;">EduPortal Institute</h4>
+		<small style="color: #64748b;">STUDENT IDENTIFICATION CARD</small>
+	</div>
+	
+	<div style="text-align: center; margin-bottom: 12px;">
+		<img src="{{ doc.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" style="width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 2px solid #4f46e5;">
+	</div>
+	
+	<div style="text-align: center; margin-bottom: 12px;">
+		<h3 style="margin: 0; font-size: 18px; color: #1e293b;">{{ doc.student_name }}</h3>
+		<span style="background: #e0e7ff; color: #4f46e5; font-weight: bold; padding: 2px 8px; border-radius: 12px; font-size: 11px;">
+			{{ doc.department }} DEPARTMENT
+		</span>
+	</div>
+	
+	<table style="width: 100%; font-size: 12px; color: #475569; border-collapse: collapse;">
+		<tr>
+			<td style="padding: 3px 0; font-weight: bold;">Reg No:</td>
+			<td style="text-align: right;">{{ doc.register_number }}</td>
+		</tr>
+		<tr>
+			<td style="padding: 3px 0; font-weight: bold;">Year & Sem:</td>
+			<td style="text-align: right;">Year {{ doc.year }} / Sem {{ doc.semester }}</td>
+		</tr>
+		<tr>
+			<td style="padding: 3px 0; font-weight: bold;">Blood Group:</td>
+			<td style="text-align: right; color: #ef4444; font-weight: bold;">{{ doc.blood_group or "O+" }}</td>
+		</tr>
+		<tr>
+			<td style="padding: 3px 0; font-weight: bold;">Emergency Phone:</td>
+			<td style="text-align: right;">{{ doc.phone_number or doc.parent_phone }}</td>
+		</tr>
+	</table>
+	
+	<div style="margin-top: 15px; border-top: 1px dashed #cbd5e1; pt: 8px; text-align: center; font-size: 10px; color: #94a3b8;">
+		Issuing Authority Signature
+	</div>
+</div>

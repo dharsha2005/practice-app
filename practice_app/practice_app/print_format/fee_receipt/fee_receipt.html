@@ -1,0 +1,57 @@
+<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ccc; max-width: 700px; margin: auto;">
+	<div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+		<h2 style="margin: 0; color: #4f46e5;">EduPortal Institute of Technology</h2>
+		<p style="margin: 5px 0 0; color: #666; font-size: 13px;">100 University Avenue, Tech District | Official Fee Payment Receipt</p>
+	</div>
+
+	<table style="width: 100%; margin-bottom: 20px; font-size: 14px;">
+		<tr>
+			<td><strong>Receipt No:</strong> {{ doc.name }}</td>
+			<td style="text-align: right;"><strong>Date:</strong> {{ doc.posting_date }}</td>
+		</tr>
+		<tr>
+			<td><strong>Student Name:</strong> {{ doc.student_name }}</td>
+			<td style="text-align: right;"><strong>Due Date:</strong> {{ doc.due_date }}</td>
+		</tr>
+	</table>
+
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+		<thead>
+			<tr style="background: #f3f4f6;">
+				<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Particulars</th>
+				<th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Amount (₹)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="border: 1px solid #ddd; padding: 8px;">Tuition Fee</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{ "{:,.2f}".format(doc.tuition_fee or 0) }}</td>
+			</tr>
+			<tr>
+				<td style="border: 1px solid #ddd; padding: 8px;">Hostel & Accommodation Fee</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{ "{:,.2f}".format(doc.hostel_fee or 0) }}</td>
+			</tr>
+			<tr>
+				<td style="border: 1px solid #ddd; padding: 8px;">Other Charges & Library Dues</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{ "{:,.2f}".format(doc.other_fee or 0) }}</td>
+			</tr>
+			<tr style="font-weight: bold; background: #fafafa;">
+				<td style="border: 1px solid #ddd; padding: 8px;">Total Fees Payable</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹ {{ "{:,.2f}".format(doc.total_amount or 0) }}</td>
+			</tr>
+			<tr style="color: #10b981; font-weight: bold;">
+				<td style="border: 1px solid #ddd; padding: 8px;">Amount Paid</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹ {{ "{:,.2f}".format(doc.paid_amount or 0) }}</td>
+			</tr>
+			<tr style="color: #ef4444; font-weight: bold;">
+				<td style="border: 1px solid #ddd; padding: 8px;">Outstanding Balance</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹ {{ "{:,.2f}".format(doc.outstanding_amount or 0) }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 13px;">
+		<div>Status: <strong>{{ doc.status }}</strong></div>
+		<div style="text-align: right; border-top: 1px solid #000; width: 200px; padding-top: 5px;">Accounts Officer Signature</div>
+	</div>
+</div>

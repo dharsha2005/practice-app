@@ -1,0 +1,33 @@
+<h2 class="text-center fw-bold">Student Academic & Enrollment Report</h2>
+
+<div class="d-flex justify-content-between mb-3 text-muted small">
+	<span><b>Department Filter:</b> <%= filters.department || "All Departments" %></span>
+	<span><b>Generated Date:</b> <%= frappe.datetime.global_date_format(frappe.datetime.now_date()) %></span>
+</div>
+
+<table class="table table-bordered align-middle">
+	<thead>
+		<tr class="table-light">
+			<th>Student Name</th>
+			<th>Register Number</th>
+			<th>Department</th>
+			<th>Year</th>
+			<th>Semester</th>
+			<th>Phone Number</th>
+			<th>CGPA</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i = 0; i < data.length; i++) { %>
+			<tr>
+				<td><%= data[i].student_name %></td>
+				<td><%= data[i].register_number %></td>
+				<td><%= data[i].department %></td>
+				<td><%= data[i].year %></td>
+				<td><%= data[i].semester %></td>
+				<td><%= data[i].phone_number || "-" %></td>
+				<td><b><%= data[i].cgpa || "0.0" %></b></td>
+			</tr>
+		<% } %>
+	</tbody>
+</table>

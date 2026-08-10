@@ -1,0 +1,124 @@
+{
+ "charts": [
+  {
+   "chart_name": "Department-wise Students"
+  }
+ ],
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"Student Management Portal\",\"level\":2}},{\"type\":\"card\",\"data\":{\"card_name\":\"Total Students\"}},{\"type\":\"card\",\"data\":{\"card_name\":\"Total Academic Courses\"}},{\"type\":\"chart\",\"data\":{\"chart_name\":\"Department-wise Students\"}}]",
+ "creation": "2026-08-07 15:53:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "icon": "education",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Student Portal",
+ "links": [
+  {
+   "label": "Student Records",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Student-form"
+  },
+  {
+   "label": "Departments",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Department"
+  },
+  {
+   "label": "Courses",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Course"
+  },
+  {
+   "label": "Faculty Directory",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Faculty"
+  },
+  {
+   "label": "Attendance Register",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Attendance"
+  },
+  {
+   "label": "Marks & Assessment",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Marks"
+  },
+  {
+   "label": "Fee Management",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Fee"
+  },
+  {
+   "label": "Certificates",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Certificate"
+  },
+  {
+   "label": "Notifications",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Notification"
+  },
+  {
+   "label": "Student Script Report",
+   "link_count": 0,
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link",
+   "link_to": "Student Script Report"
+  }
+ ],
+ "modified": "2026-08-07 15:53:00.000000",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "Student Portal",
+ "number_cards": [
+  {
+   "card_name": "Total Students"
+  },
+  {
+   "card_name": "Total Academic Courses"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 1,
+ "shortcut_first": 0,
+ "shortcuts": [],
+ "title": "Student Portal"
+}

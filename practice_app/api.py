@@ -1,55 +1,340 @@
-import frappe
-from frappe.query_builder import DocType
-from frappe.utils import now
+# Student Management Portal - Core API Endpoints
+# Copyright (c) 2026, Dharshan and contributors
+# License: MIT. See LICENSE
 
-def custom_logic(doc, method):
-    frappe.msgprint("Hook executed!")
+import json
+import frappe
+from frappe import _
+from typing import Dict, Any, List, Optional
 
 @frappe.whitelist(allow_guest=True)
-def assignment_api():
-    practice_manager = DocType("practice-manager")
-    child = DocType("practice-child")
-    query = (
-        frappe.qb.from_(practice_manager)
-        .join(child).on(practice_manager.name == child.parent)
-        .select(
-            practice_manager.name,
-            practice_manager.student_name,
-            practice_manager.age,
-            child.subject,
-            child.marks,
-        )
-        .where(practice_manager.age>=18)
-    )
-    records = query.run(as_dict=True)
-    if records:
-        pr = records[0]['name']
-        doc = frappe.get_doc("practice-manager",pr)
-        frappe.db.set_value(
-            "practice-manager",
-            pr,
-            "age",
-            20
-        )
-        frappe.db.commit()
-    return query.run(as_dict=True)
+def custom_logout():
+	"""Logs out the current user session and redirects to login page."""
+	if hasattr(frappe.local, "login_manager"):
+		frappe.local.login_manager.logout()
+	frappe.db.commit()
+	frappe.redirect("/login")
+
+@frappe.whitelist(allow_guest=True)
+def get_public_stats() -> Dict[str, int]:
+	"""Returns aggregate stats for home page display."""
+	return {
+		"students_count": frappe.db.count("Student-form") or 0,
+		"courses_count": frappe.db.count("Course") if frappe.db.exists("DocType", "Course") else 0,
+		"departments_count": frappe.db.count("Department") if frappe.db.exists("DocType", "Department") else 0,
+		"faculty_count": frappe.db.count("Faculty") if frappe.db.exists("DocType", "Faculty") else 0,
+	}
+
+@frappe.whitelist(allow_guest=True)
+def submit_contact_form(name: str, email: str, phone: str, subject: str, message: str) -> Dict[str, Any]:
+	"""Stores contact form submissions and triggers real-time email notification via Resend API."""
+	if not name or not email or not message:
+		frappe.throw(_("Name, Email, and Message are required fields."))
+	
+	doc = frappe.get_doc({
+		"doctype": "Communication",
+		"communication_type": "Communication",
+		"sender": email,
+		"sender_full_name": name,
+		"subject": subject or "Portal Contact Form Submission",
+		"content": f"Phone: {phone}\n\nMessage:\n{message}"
+	})
+	doc.insert(ignore_permissions=True)
+
+	from practice_app.utils import send_resend_email
+	email_subject = f"⚡ Realtime Portal Contact Inquiry: {subject or 'Inquiry'}"
+	html = f"""
+	<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+		<h2 style="color: #6366f1;">New Portal Contact Submission</h2>
+		<p><strong>Name:</strong> {name}</p>
+		<p><strong>Sender Email:</strong> {email}</p>
+		<p><strong>Phone:</strong> {phone or '-'}</p>
+		<p><strong>Subject:</strong> {subject}</p>
+		<div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #6366f1; margin: 15px 0;">
+			<p style="margin: 0;">{message}</p>
+		</div>
+		<hr>
+		<p style="font-size: 12px; color: #64748b;">EduPortal Realtime Email System & Resend API.</p>
+	</div>
+	"""
+	send_resend_email(email_subject, html, [email, "baladharshan1972@gmail.com"])
+	
+	return {
+		"status": "success",
+		"message": _("Thank you for contacting us! We will get back to you shortly.")
+	}
+
+@frappe.whitelist(allow_guest=True)
+def send_test_realtime_email(to_email: Optional[str] = None, subject: Optional[str] = None, message: Optional[str] = None) -> Dict[str, Any]:
+	"""Whitelisted API endpoint to send real-time email notifications via Resend API."""
+	from practice_app.utils import send_resend_email
+	recipient = to_email or "baladharshan1972@gmail.com"
+	mail_subject = subject or "⚡ EduPortal Realtime Email Notification"
+	body_text = message or "This is a real-time email notification sent via Resend API from EduPortal."
+	
+	html = f"""
+	<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+		<h2 style="color: #6366f1;">⚡ EduPortal Real-Time Email Notification</h2>
+		<p>{body_text}</p>
+		<p><strong>Recipient Email:</strong> {recipient}</p>
+		<p><strong>Timestamp:</strong> {frappe.utils.now()}</p>
+		<hr>
+		<p style="font-size: 12px; color: #64748b;">Powered by Resend API integration (baladharshan1972@gmail.com).</p>
+	</div>
+	"""
+	res = send_resend_email(mail_subject, html, recipient)
+	return res
 
 @frappe.whitelist()
-def get_recent_todos():
-    todos = frappe.get_list(
-        "ToDo",
-        fields = ["name","description","owner"],
-        order_by= "modified desc",
-        limit= 5    
-    )
-    for todo in todos:
-        email = frappe.db.get_value(
-            "User",
-            todo['owner'],
-            "email"
-        )
-        todo['email'] = email
-    return{
-        'timestamp':now(),
-        'records': todos
-    }
+def get_logged_user_student_info() -> Dict[str, Any]:
+	"""Retrieves profile details for the currently logged in student."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to view portal information."), frappe.PermissionError)
+	
+	student = frappe.db.get_value(
+		"Student-form",
+		{"email": user},
+		["name", "student_name", "register_number", "department", "semester", "year", "cgpa", "phone_number", "student_photo"],
+		as_dict=True
+	)
+	return student or {}
+
+import base64
+
+@frappe.whitelist(allow_guest=False)
+def upload_student_profile_photo(filedata: Optional[str] = None, filename: Optional[str] = None, file_url: Optional[str] = None, student_id: Optional[str] = None) -> Dict[str, Any]:
+	"""Saves base64 uploaded file or image URL directly as student_photo on Student-form."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to perform this action."), frappe.PermissionError)
+
+	roles = frappe.get_roles(user)
+	is_admin = "Administrator" in roles or "System Manager" in roles
+
+	if student_id and is_admin:
+		target_student = student_id
+	else:
+		target_student = frappe.db.get_value("Student-form", {"email": user}, "name") or frappe.db.get_value("Student-form", {"owner": user}, "name")
+
+	if not target_student:
+		frappe.throw(_("Student record not found."))
+
+	final_url = file_url
+	if filedata:
+		if "," in filedata:
+			header, content = filedata.split(",", 1)
+		else:
+			content = filedata
+
+		decoded_content = base64.b64decode(content)
+		_file = frappe.get_doc({
+			"doctype": "File",
+			"file_name": filename or f"student_photo_{target_student}.jpg",
+			"attached_to_doctype": "Student-form",
+			"attached_to_name": target_student,
+			"attached_to_field": "student_photo",
+			"content": decoded_content,
+			"is_private": 0
+		})
+		_file.insert(ignore_permissions=True)
+		final_url = _file.file_url
+
+	if not final_url:
+		frappe.throw(_("No image file or URL provided."))
+
+	frappe.db.set_value("Student-form", target_student, "student_photo", final_url)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Profile photo updated successfully!"),
+		"file_url": final_url
+	}
+
+# ==================================================
+# REST APIs FOR STUDENT CRUD OPERATIONS
+# ==================================================
+
+@frappe.whitelist()
+def get_student(student_id: Optional[str] = None, register_number: Optional[str] = None) -> Dict[str, Any]:
+	"""Gets student record by name/ID or register number."""
+	filters = {}
+	if student_id:
+		filters["name"] = student_id
+	elif register_number:
+		filters["register_number"] = register_number
+	else:
+		frappe.throw(_("Please specify student_id or register_number."))
+
+	student = frappe.get_doc("Student-form", filters)
+	if not student.has_permission("read"):
+		frappe.throw(_("Permission denied to read this student record."), frappe.PermissionError)
+		
+	return student.as_dict()
+
+@frappe.whitelist()
+def create_student(data: Any) -> Dict[str, Any]:
+	"""Creates a new Student record."""
+	if not frappe.has_permission("Student-form", "create"):
+		frappe.throw(_("Permission denied to create student records."), frappe.PermissionError)
+
+	if isinstance(data, str):
+		data = json.loads(data)
+
+	student = frappe.get_doc({"doctype": "Student-form", **data})
+	student.insert()
+	frappe.db.commit()
+	
+	return {
+		"status": "success",
+		"message": _("Student {0} created successfully.").format(student.student_name),
+		"student_id": student.name
+	}
+
+@frappe.whitelist()
+def update_student(student_id: str, data: Any) -> Dict[str, Any]:
+	"""Updates an existing Student record."""
+	student = frappe.get_doc("Student-form", student_id)
+	if not student.has_permission("write"):
+		frappe.throw(_("Permission denied to update this student record."), frappe.PermissionError)
+
+	if isinstance(data, str):
+		data = json.loads(data)
+
+	student.update(data)
+	student.save()
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Student {0} updated successfully.").format(student.student_name)
+	}
+
+@frappe.whitelist()
+def delete_student(student_id: str) -> Dict[str, Any]:
+	"""Deletes a Student record."""
+	student = frappe.get_doc("Student-form", student_id)
+	if not student.has_permission("delete"):
+		frappe.throw(_("Permission denied to delete student record."), frappe.PermissionError)
+
+	frappe.delete_doc("Student-form", student_id)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Student record deleted successfully.")
+	}
+
+# ==================================================
+# ATTENDANCE APIs
+# ==================================================
+
+@frappe.whitelist()
+def get_attendance(student_id: str, from_date: Optional[str] = None, to_date: Optional[str] = None) -> List[Dict[str, Any]]:
+	"""Fetches attendance entries for a student."""
+	filters = {"student": student_id}
+	if from_date and to_date:
+		filters["date"] = ["between", [from_date, to_date]]
+		
+	return frappe.get_all(
+		"Attendance",
+		filters=filters,
+		fields=["name", "date", "subject", "status", "remarks"],
+		order_by="date desc"
+	)
+
+@frappe.whitelist()
+def mark_attendance(student_id: str, date: str, status: str, subject: Optional[str] = None, remarks: Optional[str] = None) -> Dict[str, Any]:
+	"""Marks attendance for a student."""
+	if not frappe.has_permission("Attendance", "create"):
+		frappe.throw(_("Permission denied to mark attendance."), frappe.PermissionError)
+
+	att = frappe.get_doc({
+		"doctype": "Attendance",
+		"student": student_id,
+		"date": date,
+		"status": status,
+		"subject": subject,
+		"remarks": remarks
+	})
+	att.insert()
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"attendance_id": att.name
+	}
+
+# ==================================================
+# MARKS APIs
+# ==================================================
+
+@frappe.whitelist()
+def get_marks(student_id: str, exam_type: Optional[str] = None) -> List[Dict[str, Any]]:
+	"""Gets mark sheets for a student."""
+	filters = {"student": student_id}
+	if exam_type:
+		filters["exam_type"] = exam_type
+		
+	return frappe.get_all(
+		"Marks",
+		filters=filters,
+		fields=["subject", "exam_type", "total_marks", "obtained_marks", "grade"],
+		order_by="modified desc"
+	)
+
+@frappe.whitelist()
+def add_marks(student_id: str, subject: str, exam_type: str, obtained_marks: float, total_marks: float = 100.0) -> Dict[str, Any]:
+	"""Submits marks entry for a student."""
+	if not frappe.has_permission("Marks", "create"):
+		frappe.throw(_("Permission denied to add marks."), frappe.PermissionError)
+
+	marks_doc = frappe.get_doc({
+		"doctype": "Marks",
+		"student": student_id,
+		"subject": subject,
+		"exam_type": exam_type,
+		"obtained_marks": float(obtained_marks),
+		"total_marks": float(total_marks)
+	})
+	marks_doc.insert()
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"grade": marks_doc.grade,
+		"marks_id": marks_doc.name
+	}
+
+# ==================================================
+# CERTIFICATES & FEES APIs
+# ==================================================
+
+@frappe.whitelist()
+def get_certificates(student_id: str) -> List[Dict[str, Any]]:
+	"""Gets issued certificates for a student."""
+	return frappe.get_all(
+		"Certificate",
+		filters={"student": student_id},
+		fields=["name", "certificate_type", "issue_date", "status", "certificate_file"]
+	)
+
+@frappe.whitelist()
+def request_certificate(student_id: str, certificate_type: str) -> Dict[str, Any]:
+	"""Requests certificate issuance."""
+	cert = frappe.get_doc({
+		"doctype": "Certificate",
+		"student": student_id,
+		"certificate_type": certificate_type,
+		"status": "Pending",
+		"issue_date": frappe.utils.today()
+	})
+	cert.insert()
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Certificate request submitted successfully."),
+		"certificate_id": cert.name
+	}

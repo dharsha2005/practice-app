@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="/assets/practice_app/css/student_portal.css">
+</head>
+<body>
+
+	{% include "templates/includes/navbar.html" %}
+
+	<!-- Portal Subnav -->
+	<div class="portal-subnav-container sticky-top" style="top: 65px; z-index: 1020;">
+		<div class="container">
+			<ul class="nav nav-pills py-2 gap-2">
+				<li class="nav-item"><a class="nav-link" href="/student"><i class="bi bi-speedometer2 me-1.5"></i> Overview</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person me-1.5"></i> Profile</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/attendance"><i class="bi bi-calendar-check me-1.5"></i> Attendance</a></li>
+				<li class="nav-item"><a class="nav-link active" href="/student/marks"><i class="bi bi-award me-1.5"></i> Marks & CGPA</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/fees"><i class="bi bi-receipt me-1.5"></i> Fee Details</a></li>
+				<li class="nav-item"><a class="nav-link" href="/student/notifications"><i class="bi bi-bell me-1.5"></i> Notifications</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<section class="py-5">
+		<div class="container">
+			<div class="glass-card p-4 mb-4">
+				<div class="row align-items-center">
+					<div class="col-md-6">
+						<h4 class="fw-bold mb-1"><i class="bi bi-award text-primary me-2"></i> Academic Performance</h4>
+						<p class="text-muted small mb-0">Current Semester Internal Marks & Grades.</p>
+					</div>
+					<div class="col-md-6 text-md-end mt-3 mt-md-0">
+						<span class="fs-2 fw-bold text-primary me-2">{{ cgpa }}</span>
+						<span class="badge {{ classification_badge_class or 'bg-primary-subtle text-primary' }}">{{ classification or 'First Class with Distinction' }}</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Marks Table -->
+			<div class="glass-card p-4">
+				<h5 class="fw-bold mb-3">Mark Sheet</h5>
+				<div class="table-responsive">
+					<table class="table align-middle">
+						<thead>
+							<tr>
+								<th>Subject</th>
+								<th>Exam Type</th>
+								<th>Total Marks</th>
+								<th>Obtained Marks</th>
+								<th>Grade</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in marks_list %}
+							<tr>
+								<td class="fw-semibold">{{ item.subject }}</td>
+								<td><span class="badge bg-secondary-subtle text-secondary">{{ item.exam_type }}</span></td>
+								<td>{{ item.total_marks }}</td>
+								<td class="fw-bold">{{ item.obtained_marks }}</td>
+								<td>
+									{% if "Fail" in item.grade %}
+									<span class="badge bg-danger-subtle text-danger">{{ item.grade }}</span>
+									{% elif "Outstanding" in item.grade or "Excellent" in item.grade or "Very Good" in item.grade %}
+									<span class="badge bg-success-subtle text-success">{{ item.grade }}</span>
+									{% else %}
+									<span class="badge bg-primary-subtle text-primary">{{ item.grade }}</span>
+									{% endif %}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{% include "templates/includes/footer.html" %}
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/assets/practice_app/js/student_portal.js"></script>
+</body>
+</html>

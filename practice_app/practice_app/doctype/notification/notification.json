@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-07 15:37:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "notif_info_section",
+  "title",
+  "category",
+  "target_role",
+  "cb1",
+  "date",
+  "message_section",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "notif_info_section",
+   "fieldtype": "Section Break",
+   "label": "Announcement Information"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Notice Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Academic\nExam Schedule\nFee Notice\nCampus Event\nGeneral Announcement",
+   "reqd": 1
+  },
+  {
+   "default": "All",
+   "fieldname": "target_role",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Target Audience",
+   "options": "All\nStudent\nFaculty\nParent"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Publish Date"
+  },
+  {
+   "fieldname": "message_section",
+   "fieldtype": "Section Break",
+   "label": "Message Content"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Text Editor",
+   "label": "Notice Content",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-07 15:37:00.000000",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "Notification",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
