@@ -39,7 +39,7 @@ def get_attendance_summary(student_id):
 	return {"total": total, "present": present, "absent": absent, "on_leave": on_leave, "percentage": pct}
 
 def get_assignment_summary(student_id, student_dept):
-	"""Get assignment submission stats from Assignment + Assignment Submission DocTypes."""
+	"""Get assignment submission stats from Assignment + AssignmentSubmission DocTypes."""
 	if not student_id:
 		return {"total": 0, "submitted": 0, "pending": 0, "graded": 0}
 	
@@ -51,7 +51,7 @@ def get_assignment_summary(student_id, student_dept):
 		return {"total": 0, "submitted": 0, "pending": 0, "graded": 0}
 	
 	submissions = frappe.get_all(
-		"Assignment Submission",
+		"AssignmentSubmission",
 		filters={"student": student_id},
 		fields=["assignment", "status"]
 	)

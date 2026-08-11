@@ -127,11 +127,11 @@ def get_context(context):
 	context.enrolled_courses_count = len(courses)
 	context.total_credits = sum(int(c.get("credits") or 3) for c in courses)
 
-	# 4. Real Assignments from Assignment and Assignment Submission DocTypes
+	# 4. Real Assignments from Assignment and AssignmentSubmission DocTypes
 	submission_map = {}
 	if student_id:
 		submissions = frappe.get_all(
-			"Assignment Submission",
+			"AssignmentSubmission",
 			filters={"student": student_id},
 			fields=["assignment", "status", "marks_obtained", "total_marks"],
 		)

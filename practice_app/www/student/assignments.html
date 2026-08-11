@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function() {
 					const formData = new FormData();
 					formData.append("file", file, file.name);
 					formData.append("is_private", "0");
-					formData.append("doctype", "Assignment Submission");
+					formData.append("doctype", "AssignmentSubmission");
 					formData.append("docfield", "submitted_file");
 
 					const uploadResp = await fetch("/api/method/upload_file", {
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
 					}
 				}
 
-				// Step 2: Create Assignment Submission record in DocType
+				// Step 2: Create AssignmentSubmission record in DocType
 				const resp = await fetch("/api/method/practice_app.api.submit_assignment", {
 					method: "POST",
 					headers: {

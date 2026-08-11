@@ -382,7 +382,7 @@ def submit_certificate_request(certificate_type: str, reason: Optional[str] = No
 
 @frappe.whitelist()
 def submit_assignment(assignment_name: str, comments: Optional[str] = None, submitted_file: Optional[str] = None) -> Dict[str, Any]:
-	"""Creates an Assignment Submission record in the database for the logged-in student.
+	"""Creates an AssignmentSubmission record in the database for the logged-in student.
 	   Marks the row as Submitted so the UI can reflect the real status on reload.
 	"""
 	user = frappe.session.user
@@ -402,7 +402,7 @@ def submit_assignment(assignment_name: str, comments: Optional[str] = None, subm
 		frappe.throw(_("Student profile not found for this user. Please complete your profile first."))
 
 	# Check if already submitted
-	existing = frappe.db.exists("Assignment Submission", {
+	existing = frappe.db.exists("AssignmentSubmission", {
 		"assignment": assignment_name,
 		"student": student_doc.get("name")
 	})
@@ -415,7 +415,7 @@ def submit_assignment(assignment_name: str, comments: Optional[str] = None, subm
 
 	# Create real submission record
 	submission = frappe.get_doc({
-		"doctype": "Assignment Submission",
+		"doctype": "AssignmentSubmission",
 		"assignment": assignment_name,
 		"student": student_doc.get("name"),
 		"student_name": student_doc.get("student_name"),
@@ -452,7 +452,7 @@ def get_student_submissions(student_id: Optional[str] = None) -> List[Dict[str, 
 		return []
 
 	return frappe.get_all(
-		"Assignment Submission",
+		"AssignmentSubmission",
 		filters={"student": student_rec},
 		fields=["name", "assignment", "status", "submission_date", "marks_obtained", "total_marks", "faculty_feedback"],
 		order_by="submission_date desc"

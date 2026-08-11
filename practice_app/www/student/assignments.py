@@ -31,9 +31,9 @@ def get_context(context):
 	submission_map = {}
 	if student_id:
 		submissions = frappe.get_all(
-			"Assignment Submission",
+			"AssignmentSubmission",
 			filters={"student": student_id},
-			# NOTE: Assignment Submission has marks_obtained and total_marks (correctly named)
+			# NOTE: AssignmentSubmission has marks_obtained and total_marks (correctly named)
 			fields=["name", "assignment", "status", "submission_date", "marks_obtained", "total_marks", "faculty_feedback"],
 		)
 		for sub in submissions:
@@ -80,7 +80,7 @@ def get_context(context):
 		else:
 			due_date_val = due_d
 
-		# Check real submission status from Assignment Submission DocType
+		# Check real submission status from AssignmentSubmission DocType
 		if assignment_name in submission_map:
 			sub = submission_map[assignment_name]
 			real_status = sub.get("status") or "Submitted"
