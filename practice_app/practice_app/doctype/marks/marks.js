@@ -2,6 +2,16 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Marks", {
-	refresh(frm) {
+	setup(frm) {
+		frm.set_query("student", function() {
+			if (frm.doc.semester) {
+				return {
+					filters: {
+						"semester": frm.doc.semester
+					}
+				};
+			}
+			return {};
+		});
 	}
 });

@@ -1,39 +1,7 @@
 {% extends "templates/portal_base.html" %}
 
 {% block content %}
-<!-- Sidebar Navigation -->
-<aside class="portal-sidebar" id="portalSidebar">
-	<div class="sidebar-header d-flex align-items-center justify-content-between">
-		<div class="d-flex align-items-center gap-2">
-			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
-				<i class="bi bi-mortarboard-fill"></i>
-			</div>
-			<div>
-				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
-				<small class="text-muted fs-7">Academic System</small>
-			</div>
-		</div>
-	</div>
-
-	<div class="py-2">
-		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
-		<div class="sidebar-group-title">ACADEMICS</div>
-		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
-		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
-		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
-		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
-		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
-
-		<div class="sidebar-group-title">ACCOUNT</div>
-		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
-		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
-		<a href="/student/settings" class="sidebar-link active"><i class="bi bi-gear"></i> Settings</a>
-	</div>
-
-	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
-		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
-	</div>
-</aside>
+{% include "templates/includes/portal_sidebar.html" %}
 
 <div class="portal-content-wrapper">
 	<!-- Top Bar -->
@@ -53,8 +21,45 @@
 
 		<div class="row g-4">
 			<div class="col-lg-6">
+				<div class="academic-card p-4 bg-white mb-4">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-moon-stars me-2"></i> Display & Appearance</h6>
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input" type="checkbox" id="darkModeSwitch">
+						<label class="form-check-label font-semibold text-dark" for="darkModeSwitch">Dark Mode Theme</label>
+						<small class="text-muted d-block">Switch portal color scheme to dark mode for comfortable night viewing.</small>
+					</div>
+				</div>
+
 				<div class="academic-card p-4 bg-white">
-					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Change Password</h6>
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-person-lines-fill me-2"></i> Update Contact Info</h6>
+					<form id="contact-info-form">
+						<div class="mb-3">
+							<label class="form-label small fw-semibold text-muted">Phone Number</label>
+							<input type="text" class="form-control" id="st-phone" value="{{ student.phone_number or '' }}">
+						</div>
+						<div class="mb-3">
+							<label class="form-label small fw-semibold text-muted">Street Address</label>
+							<input type="text" class="form-control" id="st-address" value="{{ student.address or '' }}">
+						</div>
+						<div class="row g-2 mb-3">
+							<div class="col-6">
+								<label class="form-label small fw-semibold text-muted">City</label>
+								<input type="text" class="form-control" id="st-city" value="{{ student.city or '' }}">
+							</div>
+							<div class="col-6">
+								<label class="form-label small fw-semibold text-muted">Pincode</label>
+								<input type="text" class="form-control" id="st-pincode" value="{{ student.pincode or '' }}">
+							</div>
+						</div>
+						<div id="contact-alert" class="alert d-none py-2 px-3 small"></div>
+						<button type="submit" id="save-contact-btn" class="btn btn-academic-navy w-100 py-2">Save Profile Details</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
+				<div class="academic-card p-4 bg-white mb-4">
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-key me-2"></i> Security Options</h6>
 					<form id="change-pass-form">
 						<div class="mb-3">
 							<label class="form-label small fw-semibold text-muted">Current Password</label>
@@ -72,11 +77,9 @@
 						<button type="submit" id="save-pass-btn" class="btn btn-academic-primary w-100 py-2">Update Password</button>
 					</form>
 				</div>
-			</div>
 
-			<div class="col-lg-6">
 				<div class="academic-card p-4 bg-white">
-					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Notification Preferences</h6>
+					<h6 class="fw-bold mb-3 border-bottom pb-2 text-primary"><i class="bi bi-bell me-2"></i> Notification Preferences</h6>
 					<div class="form-check form-switch mb-3">
 						<input class="form-check-input" type="checkbox" id="emailNotifSwitch" checked>
 						<label class="form-check-label font-semibold text-dark" for="emailNotifSwitch">Email Alerts via Resend API</label>
@@ -104,9 +107,69 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
-		const form = document.getElementById("change-pass-form");
-		if (form) {
-			form.addEventListener("submit", function(e) {
+		function getCsrfToken() {
+			const match = document.cookie.match(/csrf_token=([^;]+)/);
+			return match ? decodeURIComponent(match[1]) : "";
+		}
+
+		// Dark Mode Toggle
+		const darkSwitch = document.getElementById("darkModeSwitch");
+		const savedTheme = localStorage.getItem("portalTheme");
+		if (savedTheme === "dark") {
+			darkSwitch.checked = true;
+			document.documentElement.setAttribute("data-theme", "dark");
+		}
+		darkSwitch.addEventListener("change", function() {
+			const theme = this.checked ? "dark" : "light";
+			document.documentElement.setAttribute("data-theme", theme);
+			localStorage.setItem("portalTheme", theme);
+		});
+
+		// Contact Info Form Submit
+		const contactForm = document.getElementById("contact-info-form");
+		if (contactForm) {
+			contactForm.addEventListener("submit", async function(e) {
+				e.preventDefault();
+				const btn = document.getElementById("save-contact-btn");
+				const alertBox = document.getElementById("contact-alert");
+				btn.disabled = true;
+				btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+				alertBox.className = "alert d-none py-2 px-3 small";
+
+				try {
+					const resp = await fetch("/api/method/practice_app.api.update_student_profile", {
+						method: "POST",
+						headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": getCsrfToken() },
+						body: JSON.stringify({
+							phone_number: document.getElementById("st-phone").value,
+							address: document.getElementById("st-address").value,
+							city: document.getElementById("st-city").value,
+							pincode: document.getElementById("st-pincode").value
+						})
+					});
+					const data = await resp.json();
+					const result = data.message || data;
+					if (result.status === "success") {
+						alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+						alertBox.textContent = result.message || "Profile details saved!";
+						setTimeout(() => alertBox.className = "alert d-none", 2500);
+					} else {
+						throw new Error(result.message || "Could not update profile.");
+					}
+				} catch (err) {
+					alertBox.className = "alert alert-danger py-2 px-3 small d-block mb-3";
+					alertBox.textContent = "Error: " + err.message;
+				} finally {
+					btn.disabled = false;
+					btn.innerHTML = "Save Profile Details";
+				}
+			});
+		}
+
+		// Change Password Form
+		const passForm = document.getElementById("change-pass-form");
+		if (passForm) {
+			passForm.addEventListener("submit", function(e) {
 				e.preventDefault();
 				const btn = document.getElementById("save-pass-btn");
 				const alertBox = document.getElementById("pass-alert");

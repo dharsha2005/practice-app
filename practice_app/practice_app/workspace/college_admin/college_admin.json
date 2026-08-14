@@ -1,0 +1,41 @@
+{
+ "app": "practice_app",
+ "charts": [],
+ "content": "[{\"id\":\"kgAo_nJkCq\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the College Admin workspac</span>\",\"col\":12}},{\"id\":\"j6EDf8fbKP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"markks\",\"col\":3}}]",
+ "creation": "2026-08-12 13:21:10.569976",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "book-open",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "College Admin",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-08-13 15:33:27.729100",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "College Admin",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 0.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "markks",
+   "link_to": "Marks",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "sidebar_items": [],
+ "standard": 1,
+ "title": "College Admin",
+ "type": "Workspace"
+}

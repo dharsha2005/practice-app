@@ -1,124 +1,160 @@
 {
+ "app": "practice_app",
  "charts": [
   {
    "chart_name": "Department-wise Students"
   }
  ],
  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"Student Management Portal\",\"level\":2}},{\"type\":\"card\",\"data\":{\"card_name\":\"Total Students\"}},{\"type\":\"card\",\"data\":{\"card_name\":\"Total Academic Courses\"}},{\"type\":\"chart\",\"data\":{\"chart_name\":\"Department-wise Students\"}}]",
- "creation": "2026-08-07 15:53:00.000000",
+ "creation": "2026-08-07 15:53:00",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
- "icon": "education",
+ "hide_custom": 0,
+ "icon": "practice_app",
  "idx": 0,
  "indicator_color": "blue",
  "is_hidden": 0,
  "label": "Student Portal",
  "links": [
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Student Records",
    "link_count": 0,
+   "link_to": "Student-form",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Student-form"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Departments",
    "link_count": 0,
+   "link_to": "Department",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Department"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Courses",
    "link_count": 0,
+   "link_to": "Course",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Course"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Faculty Directory",
    "link_count": 0,
+   "link_to": "Faculty",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Faculty"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Attendance Register",
    "link_count": 0,
+   "link_to": "Attendance",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Attendance"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Marks & Assessment",
    "link_count": 0,
+   "link_to": "Marks",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Marks"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Fee Management",
    "link_count": 0,
+   "link_to": "Fee",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Fee"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Certificates",
    "link_count": 0,
+   "link_to": "Certificate",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Certificate"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Notifications",
    "link_count": 0,
+   "link_to": "Notification",
    "link_type": "DocType",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Notification"
+   "type": "Link"
   },
   {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Student Script Report",
    "link_count": 0,
+   "link_to": "Student Script Report",
    "link_type": "Report",
    "onboard": 0,
-   "type": "Link",
-   "link_to": "Student Script Report"
+   "report_ref_doctype": "Student-form",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Workspace List",
+   "link_count": 0,
+   "link_to": "Workspace",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-08-07 15:53:00.000000",
+ "modified": "2026-08-12 14:53:06.201170",
  "modified_by": "Administrator",
  "module": "Practice App",
  "name": "Student Portal",
  "number_cards": [
   {
-   "card_name": "Total Students"
+   "number_card_name": "Total Students"
   },
   {
-   "card_name": "Total Academic Courses"
+   "number_card_name": "Total Academic Courses"
   }
  ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
+ "quick_lists": [],
  "roles": [
   {
    "role": "System Manager"
   }
  ],
- "sequence_id": 1,
- "shortcut_first": 0,
+ "sequence_id": 1.0,
  "shortcuts": [],
- "title": "Student Portal"
+ "sidebar_items": [],
+ "standard": 1,
+ "title": "Student Portal",
+ "type": "Workspace"
 }

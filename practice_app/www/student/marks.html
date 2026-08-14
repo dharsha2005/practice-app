@@ -1,42 +1,7 @@
 {% extends "templates/portal_base.html" %}
 
 {% block content %}
-<!-- Sidebar Navigation -->
-<aside class="portal-sidebar" id="portalSidebar">
-	<div class="sidebar-header d-flex align-items-center justify-content-between">
-		<div class="d-flex align-items-center gap-2">
-			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
-				<i class="bi bi-mortarboard-fill"></i>
-			</div>
-			<div>
-				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
-				<small class="text-muted fs-7">Academic System</small>
-			</div>
-		</div>
-	</div>
-
-	<div class="py-2">
-		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
-		<div class="sidebar-group-title">ACADEMICS</div>
-		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
-		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
-		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
-		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
-		<a href="/student/marks" class="sidebar-link active"><i class="bi bi-award"></i> Results</a>
-
-		<div class="sidebar-group-title">SERVICES</div>
-		<a href="/student/certificates" class="sidebar-link"><i class="bi bi-award-fill"></i> Certificates</a>
-		<a href="/student/leave" class="sidebar-link"><i class="bi bi-calendar-minus"></i> Leave Application</a>
-
-		<div class="sidebar-group-title">ACCOUNT</div>
-		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
-		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
-	</div>
-
-	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
-		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
-	</div>
-</aside>
+{% include "templates/includes/portal_sidebar.html" %}
 
 <div class="portal-content-wrapper">
 	<!-- Top Bar -->
@@ -62,27 +27,36 @@
 				</div>
 				<div class="col-md-6">
 					<div class="row g-3 text-center">
-						<div class="col-4">
-							<div class="p-3 rounded bg-light border">
+						<div class="col-md-3 col-6">
+							<div class="p-2.5 rounded bg-light border">
 								<small class="text-muted font-semibold fs-7 d-block">SGPA</small>
-								<span class="stat-number text-primary fs-3" id="displaySgpa">
+								<span class="stat-number text-primary fs-4 fw-bold" id="displaySgpa">
 									{% set first_sem_key = semesters.keys() | list | first %}
 									{{ semesters[first_sem_key].sgpa if first_sem_key else '—' }}
 								</span>
 							</div>
 						</div>
-						<div class="col-4">
-							<div class="p-3 rounded bg-light border">
+						<div class="col-md-3 col-6">
+							<div class="p-2.5 rounded bg-light border">
 								<small class="text-muted font-semibold fs-7 d-block">CGPA</small>
-								<span class="stat-number text-success fs-3">{{ cgpa if cgpa else '—' }}</span>
+								<span class="stat-number text-success fs-4 fw-bold">{{ cgpa if cgpa else '—' }}</span>
 							</div>
 						</div>
-						<div class="col-4">
-							<div class="p-3 rounded bg-light border">
+						<div class="col-md-3 col-6">
+							<div class="p-2.5 rounded bg-light border">
 								<small class="text-muted font-semibold fs-7 d-block">CREDITS</small>
-								<span class="stat-number text-navy fs-3" id="displayCredits">
+								<span class="stat-number text-navy fs-4 fw-bold" id="displayCredits">
 									{% set first_sem_key = semesters.keys() | list | first %}
 									{{ semesters[first_sem_key].credits if first_sem_key else '—' }}
+								</span>
+							</div>
+						</div>
+						<div class="col-md-3 col-6">
+							<div class="p-2.5 rounded bg-light border">
+								<small class="text-muted font-semibold fs-7 d-block">SEM MARKS</small>
+								<span class="stat-number text-warning fs-4 fw-bold" id="displayMarks">
+									{% set first_sem_key = semesters.keys() | list | first %}
+									{{ semesters[first_sem_key].obtained | int if first_sem_key else '—' }} / {{ semesters[first_sem_key].possible | int if first_sem_key else '—' }}
 								</span>
 							</div>
 						</div>
@@ -107,7 +81,9 @@
 			<button class="btn {{ 'btn-academic-navy active' if loop.last else 'btn-academic-outline' }} btn-sm px-3 sem-pill-btn"
 				data-sem="{{ sem_name }}"
 				data-sgpa="{{ sem_info.sgpa }}"
-				data-credits="{{ sem_info.credits }}">{{ sem_name }}</button>
+				data-credits="{{ sem_info.credits }}"
+				data-obtained="{{ sem_info.obtained | int }}"
+				data-possible="{{ sem_info.possible | int }}">{{ sem_name }}</button>
 			{% endfor %}
 		</div>
 
@@ -181,6 +157,7 @@
 		const badge = document.getElementById("currentSemesterBadge");
 		const sgpaEl = document.getElementById("displaySgpa");
 		const creditsEl = document.getElementById("displayCredits");
+		const marksEl = document.getElementById("displayMarks");
 
 		pillBtns.forEach(btn => {
 			btn.addEventListener("click", function() {
@@ -194,10 +171,13 @@
 				const semName = this.getAttribute("data-sem");
 				const sgpa = this.getAttribute("data-sgpa");
 				const credits = this.getAttribute("data-credits");
+				const obtained = this.getAttribute("data-obtained");
+				const possible = this.getAttribute("data-possible");
 
 				if (badge) badge.textContent = semName + " Examination";
 				if (sgpaEl) sgpaEl.textContent = sgpa;
 				if (creditsEl) creditsEl.textContent = credits;
+				if (marksEl) marksEl.textContent = obtained + " / " + possible;
 
 				const targetTableId = "table-" + semName.replace(/\s+/g, '-');
 				tableContainers.forEach(container => {

@@ -7,6 +7,58 @@ import frappe
 from frappe import _
 from typing import Optional, Dict, Any
 
+def boot_session(bootinfo: Dict[str, Any]) -> None:
+	"""Extends bootinfo.app_data to display College Admin and Library as separate icons on the /desk screen."""
+	if hasattr(bootinfo, "app_data") and isinstance(bootinfo.app_data, list):
+		# Fix Framework icon route so it opens Frappe DocType List (/desk/doctype/DocType)
+		for app in bootinfo.app_data:
+			if app.get("app_name") == "frappe" or app.get("app_title") == "Framework":
+				app["app_route"] = "/desk/doctype/DocType"
+
+		if not any(app.get("app_name") == "college_admin" for app in bootinfo.app_data):
+			bootinfo.app_data.append({
+				"on_apps_screen": True,
+				"sequence_id": 50,
+				"app_name": "college_admin",
+				"app_title": "College Admin",
+				"app_route": "/app/college-admin",
+				"app_logo_url": "/assets/practice_app/images/practice_app.svg",
+				"modules": [],
+				"workspaces": ["College Admin"]
+			})
+
+		if not any(app.get("app_name") == "library_workspace" for app in bootinfo.app_data):
+			bootinfo.app_data.append({
+				"on_apps_screen": True,
+				"sequence_id": 60,
+				"app_name": "library_workspace",
+				"app_title": "Library",
+				"app_route": "/desk/library",
+				"app_logo_url": "/assets/practice_app/images/practice_app.svg",
+				"modules": [],
+				"workspaces": ["Library"]
+			})
+
+def fix_library_workspace() -> None:
+	"""Converts Library-Administrator workspace to a Public Workspace."""
+	if frappe.db.exists("Workspace", "Library-Administrator"):
+		doc = frappe.get_doc("Workspace", "Library-Administrator")
+		doc.for_user = ""
+		doc.public = 1
+		doc.module = "Practice App"
+		doc.app = "practice_app"
+		doc.save(ignore_permissions=True)
+		frappe.rename_doc("Workspace", "Library-Administrator", "Library", force=True)
+		frappe.db.commit()
+	elif frappe.db.exists("Workspace", "Library"):
+		lib_doc = frappe.get_doc("Workspace", "Library")
+		lib_doc.public = 1
+		lib_doc.for_user = ""
+		lib_doc.module = "Practice App"
+		lib_doc.app = "practice_app"
+		lib_doc.save(ignore_permissions=True)
+		frappe.db.commit()
+
 def validate_student_form(doc, method: Optional[str] = None) -> None:
 	"""Validates Student Form fields: phone number format, email format, age, CGPA."""
 	if doc.phone_number:
@@ -236,7 +288,19 @@ def on_marks_submit(doc, method: Optional[str] = None) -> None:
 	send_resend_email(subject, html, recipients)
 
 def update_website_context(context: Dict[str, Any]) -> None:
-	"""Globally injects role flags into website Jinja context."""
+	"""Globally injects role flags into website Jinja context and implements portal block check."""
+	# 1. Centralized Student Portal access blocking check
+	route = getattr(frappe.local, "path", "") or ""
+	if route.startswith("student"):
+		block_portal = frappe.db.get_single_value("Student Portal Settings", "block_student_portal")
+		if block_portal:
+			user = frappe.session.user
+			roles = frappe.get_roles(user) if user else []
+			if "Administrator" not in roles and "System Manager" not in roles:
+				frappe.redirect("/maintenance")
+				raise frappe.Redirect
+
+	# 2. Inject role flags
 	user = frappe.session.user
 	if user and user != "Guest":
 		roles = frappe.get_roles(user)
@@ -249,7 +313,7 @@ def update_website_context(context: Dict[str, Any]) -> None:
 def get_website_user_home_page(user: Optional[str] = None) -> str:
 	"""Determines home page route based on user roles (Admin/Staff -> /app, Student -> /student)."""
 	if not user or user == "Guest":
-		return "/"
+		return None
 	roles = frappe.get_roles(user)
 	if "Administrator" in roles or "System Manager" in roles or "Faculty" in roles or "System User" in roles:
 		return "/app"
@@ -264,3 +328,60 @@ def send_daily_attendance_alerts() -> None:
 def send_fee_due_reminders() -> None:
 	"""Daily background task to send fee due reminders."""
 	pass
+
+def validate_assignment_submission(doc, method: Optional[str] = None) -> None:
+	"""Pre-save check to detect if status is transitioning to Graded."""
+	if not doc:
+		return
+	if doc.status == "Graded":
+		# If the document is new or status was not Graded in DB, set flag
+		db_status = frappe.db.get_value("AssignmentSubmission", doc.name, "status") if doc.name else None
+		if db_status != "Graded":
+			doc.flags.should_notify_grading = True
+
+def on_assignment_submission_update(doc, method: Optional[str] = None) -> None:
+	"""Triggers real-time notice announcement and email alerts when assignment is graded."""
+	if not doc:
+		return
+	
+	if getattr(doc.flags, "should_notify_grading", False):
+		# Fetch assignment title
+		assignment_title = frappe.db.get_value("Assignment", doc.assignment, "title") or doc.assignment
+		subject = f"Graded: {assignment_title}"
+		
+		# Strip HTML tags from feedback if present
+		import re
+		feedback = getattr(doc, "faculty_feedback", "") or ""
+		clean_feedback = re.sub('<[^<]+?>', '', feedback).strip()
+		
+		msg = f"Your submission for assignment '{assignment_title}' has been graded.\n"
+		msg += f"Marks Obtained: {getattr(doc, 'marks_obtained', 0)} / {getattr(doc, 'total_marks', 100)}\n"
+		if clean_feedback:
+			msg += f"Feedback: {clean_feedback}"
+
+		# Create notice/announcement Notification record
+		notif = frappe.get_doc({
+			"doctype": "Notification",
+			"title": subject,
+			"category": "Academic",
+			"target_role": "Student",
+			"date": frappe.utils.today(),
+			"message": msg
+		})
+		notif.insert(ignore_permissions=True)
+
+		# Trigger real-time email notification via Resend API
+		student_email = frappe.db.get_value("Student-form", doc.student, "email")
+		if student_email:
+			html = f"""
+			<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+				<h2 style="color: #4f46e5;">Assignment Graded Alert</h2>
+				<p><strong>Assignment:</strong> {assignment_title}</p>
+				<p><strong>Marks Obtained:</strong> {getattr(doc, 'marks_obtained', 0)} / {getattr(doc, 'total_marks', 100)}</p>
+				{f'<div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #4f46e5; margin: 15px 0;"><p style="margin:0;"><strong>Faculty Feedback:</strong> {clean_feedback}</p></div>' if clean_feedback else ''}
+				<hr>
+				<p style="font-size: 12px; color: #64748b;">Powered by EduPortal Realtime Email Engine & Resend API.</p>
+			</div>
+			"""
+			send_resend_email(subject, html, [student_email])
+

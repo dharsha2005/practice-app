@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Portal Offline | EduPortal</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<style>
+		body {
+			background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-family: system-ui, -apple-system, sans-serif;
+		}
+		.maintenance-card {
+			background: white;
+			border-radius: 20px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+			padding: 3rem;
+			max-width: 540px;
+			width: 100%;
+			text-align: center;
+			border: 1px solid rgba(226, 232, 240, 0.8);
+		}
+		.gear-icon {
+			font-size: 4.5rem;
+			color: #4f46e5;
+			display: inline-block;
+			animation: spin 8s linear infinite;
+		}
+		@keyframes spin {
+			100% { transform: rotate(360deg); }
+		}
+		.brand-name {
+			font-size: 0.85rem;
+			font-weight: 700;
+			letter-spacing: 0.05em;
+			color: #64748b;
+			text-transform: uppercase;
+		}
+	</style>
+</head>
+<body>
+	<div class="container d-flex justify-content-center">
+		<div class="maintenance-card">
+			<div class="mb-4">
+				<i class="bi bi-gear-wide-connected gear-icon"></i>
+			</div>
+			<div class="brand-name mb-2">EduPortal System Notice</div>
+			<h2 class="fw-bold text-dark mb-3">Portal Under Maintenance</h2>
+			<p class="text-muted mb-4 fs-5" style="line-height: 1.6;">
+				{{ message }}
+			</p>
+			<div class="pt-3 border-top border-light">
+				<p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i> If this is urgent, please contact the college administration office.</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

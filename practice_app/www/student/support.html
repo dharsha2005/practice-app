@@ -1,0 +1,128 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+{% include "templates/includes/portal_sidebar.html" %}
+
+<div class="portal-content-wrapper">
+	<!-- Top Bar -->
+	<header class="bg-white border-bottom py-2 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Student Support</h5>
+		</div>
+		<div class="d-flex align-items-center gap-3">
+			<a href="/student/notifications" class="btn btn-light rounded-circle p-2 position-relative" style="width:40px;height:40px;">
+				<i class="bi bi-bell text-muted"></i>
+			</a>
+			<div class="dropdown">
+				<div class="d-flex align-items-center gap-2" style="cursor:pointer;" id="profileHeaderDropdown" data-bs-toggle="dropdown">
+					<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border" style="width:38px;height:38px;object-fit:cover;">
+					<div class="d-none d-md-block text-start">
+						<span class="fw-bold d-block text-dark small">{{ student.student_name or 'Student' }}</span>
+						<small class="text-muted" style="font-size:0.75rem;">{{ student.register_number or '' }}</small>
+					</div>
+				</div>
+				<ul class="dropdown-menu dropdown-menu-end shadow mt-2" style="border-radius:12px;min-width:170px;">
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/settings"><i class="bi bi-gear-fill text-muted"></i> Settings</a></li>
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/profile"><i class="bi bi-person-badge-fill text-muted"></i> View Profile</a></li>
+					<li><hr class="dropdown-divider my-1"></li>
+					<li><a class="dropdown-item py-2 text-danger small d-flex align-items-center gap-2" href="#" onclick="return portalLogout();"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Hero Banner -->
+		<div class="academic-card p-4 mb-4 bg-white" style="border-left: 4px solid var(--navy-primary);">
+			<div class="d-flex align-items-center gap-3">
+				<div class="brand-badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width:52px;height:52px;font-size:1.5rem;">
+					<i class="bi bi-headset text-white"></i>
+				</div>
+				<div>
+					<h4 class="fw-bold mb-1">How can we help you?</h4>
+					<p class="text-muted mb-0 small">Find answers to common questions or contact the right department directly.</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="row g-4">
+			<!-- FAQ Section -->
+			<div class="col-lg-7">
+				<div class="academic-card p-4 bg-white h-100">
+					<h6 class="fw-bold mb-3"><i class="bi bi-question-circle-fill me-2 text-primary"></i> Frequently Asked Questions</h6>
+					<div class="accordion accordion-flush" id="faqAccordion">
+						{% for faq in faqs %}
+						<div class="accordion-item border-bottom border-0" style="background:transparent;">
+							<h2 class="accordion-header">
+								<button class="accordion-button collapsed fw-semibold small text-dark py-3 px-0" type="button"
+									data-bs-toggle="collapse" data-bs-target="#faq{{ loop.index }}" style="background:transparent;box-shadow:none;">
+									{{ faq.question }}
+								</button>
+							</h2>
+							<div id="faq{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+								<div class="accordion-body px-0 pt-0 pb-3 text-muted small">
+									{{ faq.answer }}
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<!-- Contact Cards -->
+			<div class="col-lg-5">
+				<div class="academic-card p-4 bg-white mb-4">
+					<h6 class="fw-bold mb-3"><i class="bi bi-telephone-fill me-2 text-primary"></i> Contact Departments</h6>
+					<div class="d-flex flex-column gap-3">
+						{% for contact in contacts %}
+						<div class="d-flex align-items-center gap-3 p-3 rounded bg-light border">
+							<div class="brand-badge bg-{{ contact.color }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;">
+								<i class="bi {{ contact.icon }}"></i>
+							</div>
+							<div class="flex-grow-1 min-width-0">
+								<div class="fw-semibold small text-dark">{{ contact.dept }}</div>
+								<a href="mailto:{{ contact.email }}" class="text-primary small text-decoration-none d-block">{{ contact.email }}</a>
+								<small class="text-muted">{{ contact.phone }}</small>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				<!-- Quick Links -->
+				<div class="academic-card p-4 bg-white">
+					<h6 class="fw-bold mb-3"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i> Quick Links</h6>
+					<div class="d-flex flex-column gap-2">
+						<a href="/student/leave" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2">
+							<span><i class="bi bi-calendar-minus me-2 text-primary"></i> Apply for Leave</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/certificates" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2">
+							<span><i class="bi bi-patch-check me-2 text-primary"></i> Request Certificate</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/attendance" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2">
+							<span><i class="bi bi-calendar-check me-2 text-primary"></i> Check Attendance</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+						<a href="/student/marks" class="btn btn-academic-outline text-start d-flex align-items-center justify-content-between py-2">
+							<span><i class="bi bi-award me-2 text-primary"></i> View Results</span>
+							<i class="bi bi-chevron-right small text-muted"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+{% endblock %}

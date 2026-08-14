@@ -2,7 +2,8 @@ import frappe
 
 def run():
     try:
-        val = frappe.db.get_single_value("System Settings", "setup_complete")
-        print(f"SETUP_COMPLETE: {val}")
+        meta = frappe.get_meta("Employment Type")
+        print("SUCCESS: Loaded Employment Type metadata!")
+        print("Fields:", [f.fieldname for f in meta.fields])
     except Exception as e:
-        print(f"ERROR: {e}")
+        print("ERROR:", e)

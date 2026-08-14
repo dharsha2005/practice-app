@@ -1,0 +1,195 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+{% include "templates/includes/portal_sidebar.html" %}
+
+<div class="portal-content-wrapper">
+	<header class="bg-white border-bottom py-2 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Course Feedback</h5>
+		</div>
+		<div class="d-flex align-items-center gap-3">
+			<a href="/student/notifications" class="btn btn-light rounded-circle p-2 position-relative" style="width:40px;height:40px;"><i class="bi bi-bell text-muted"></i></a>
+			<div class="dropdown">
+				<div class="d-flex align-items-center gap-2" style="cursor:pointer;" id="profileHeaderDropdown" data-bs-toggle="dropdown">
+					<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border" style="width:38px;height:38px;object-fit:cover;">
+					<div class="d-none d-md-block text-start">
+						<span class="fw-bold d-block text-dark small">{{ student.student_name or 'Student' }}</span>
+						<small class="text-muted" style="font-size:0.75rem;">{{ student.register_number or '' }}</small>
+					</div>
+				</div>
+				<ul class="dropdown-menu dropdown-menu-end shadow mt-2" style="border-radius:12px;min-width:170px;">
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/settings"><i class="bi bi-gear-fill text-muted"></i> Settings</a></li>
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/profile"><i class="bi bi-person-badge-fill text-muted"></i> View Profile</a></li>
+					<li><hr class="dropdown-divider my-1"></li>
+					<li><a class="dropdown-item py-2 text-danger small d-flex align-items-center gap-2" href="#" onclick="return portalLogout();"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+			<div>
+				<h4 class="fw-extrabold mb-1">Course & Faculty Feedback</h4>
+				<p class="text-muted small mb-0">Help us improve course quality by sharing your ratings and honest feedback.</p>
+			</div>
+			<button class="btn btn-academic-primary btn-sm" data-bs-toggle="modal" data-bs-target="#submitFeedbackModal">
+				<i class="bi bi-chat-square-quote me-1"></i> Submit Course Feedback
+			</button>
+		</div>
+
+		<!-- Feedback List -->
+		<div class="academic-card p-4 bg-white mb-4">
+			<h6 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-2"></i> Your Submitted Feedback</h6>
+			<div class="table-responsive">
+				<table class="table align-middle">
+					<thead>
+						<tr>
+							<th>Course</th>
+							<th>Overall Rating</th>
+							<th>Teaching Quality</th>
+							<th>Content Quality</th>
+							<th>Comments</th>
+							<th>Submitted On</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for fb in feedbacks %}
+						<tr>
+							<td><strong class="text-dark">{{ fb.course_name or fb.course }}</strong></td>
+							<td>
+								<span class="text-warning fw-bold">
+									{% for i in range(fb.rating or 5) %}★{% endfor %}
+								</span>
+								<small class="text-muted">({{ fb.rating }}/5)</small>
+							</td>
+							<td><span class="badge bg-light text-dark border">{{ fb.teaching_quality or 5 }}/5</span></td>
+							<td><span class="badge bg-light text-dark border">{{ fb.content_quality or 5 }}/5</span></td>
+							<td class="small text-muted" style="max-width:250px;">{{ fb.comments or '-' }}</td>
+							<td class="small">{{ fb.submitted_on }}</td>
+						</tr>
+						{% else %}
+						<tr>
+							<td colspan="6" class="text-center text-muted py-5">
+								<i class="bi bi-chat-dots fs-2 d-block mb-2"></i>
+								No course feedback submitted yet. Click "Submit Course Feedback" above!
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="submitFeedbackModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom bg-primary text-white">
+				<h5 class="modal-title fw-bold"><i class="bi bi-star me-2"></i> Course Feedback Form</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="course-feedback-form">
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Select Course</label>
+						<select class="form-select" id="fb-course" required>
+							{% for c in courses %}
+							<option value="{{ c.name }}">{{ c.course_name }} ({{ c.course_code or c.name }})</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Overall Star Rating (1 to 5)</label>
+						<select class="form-select" id="fb-rating" required>
+							<option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
+							<option value="4">⭐⭐⭐⭐ 4 - Good</option>
+							<option value="3">⭐⭐⭐ 3 - Average</option>
+							<option value="2">⭐⭐ 2 - Below Average</option>
+							<option value="1">⭐ 1 - Poor</option>
+						</select>
+					</div>
+					<div class="row g-3 mb-3">
+						<div class="col-6">
+							<label class="form-label small fw-semibold text-muted">Teaching Quality (1-5)</label>
+							<input type="number" class="form-control" id="fb-teaching" min="1" max="5" value="5" required>
+						</div>
+						<div class="col-6">
+							<label class="form-label small fw-semibold text-muted">Course Content (1-5)</label>
+							<input type="number" class="form-control" id="fb-content" min="1" max="5" value="5" required>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Detailed Comments & Suggestions</label>
+						<textarea class="form-control" id="fb-comments" rows="3" placeholder="What did you like about this course? How can it be improved?"></textarea>
+					</div>
+					<div id="fb-alert" class="alert d-none py-2 px-3 small"></div>
+					<button type="submit" id="fb-submit-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold">Submit Feedback</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	function getCsrfToken() {
+		const match = document.cookie.match(/csrf_token=([^;]+)/);
+		return match ? decodeURIComponent(match[1]) : "";
+	}
+
+	const form = document.getElementById("course-feedback-form");
+	if (form) {
+		form.addEventListener("submit", async function(e) {
+			e.preventDefault();
+			const btn = document.getElementById("fb-submit-btn");
+			const alertBox = document.getElementById("fb-alert");
+
+			btn.disabled = true;
+			btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+			alertBox.className = "alert d-none py-2 px-3 small";
+
+			try {
+				const resp = await fetch("/api/method/practice_app.api.submit_course_feedback", {
+					method: "POST",
+					headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": getCsrfToken() },
+					body: JSON.stringify({
+						course: document.getElementById("fb-course").value,
+						rating: parseInt(document.getElementById("fb-rating").value),
+						teaching_quality: parseInt(document.getElementById("fb-teaching").value),
+						content_quality: parseInt(document.getElementById("fb-content").value),
+						comments: document.getElementById("fb-comments").value
+					})
+				});
+				const data = await resp.json();
+				const result = data.message || data;
+
+				if (result.status === "success") {
+					alertBox.className = "alert alert-success py-2 px-3 small d-block mb-3";
+					alertBox.textContent = result.message || "Feedback submitted!";
+					setTimeout(() => window.location.reload(), 1400);
+				} else {
+					throw new Error(result.message || "Submission failed.");
+				}
+			} catch (err) {
+				btn.disabled = false;
+				btn.innerHTML = "Submit Feedback";
+				alertBox.className = "alert alert-danger py-2 px-3 small d-block mb-3";
+				alertBox.textContent = "Error: " + err.message;
+			}
+		});
+	}
+});
+</script>
+{% endblock %}

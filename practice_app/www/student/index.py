@@ -14,6 +14,16 @@ def parse_sem_num(sem_val):
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+def get_greeting():
+	"""Return time-based greeting: Good Morning / Good Afternoon / Good Evening."""
+	hour = datetime.now().hour
+	if hour < 12:
+		return "Good Morning"
+	elif hour < 17:
+		return "Good Afternoon"
+	else:
+		return "Good Evening"
+
 def get_context(context):
 	if isinstance(context, dict) and not hasattr(context, "base_template_path"):
 		context = frappe._dict(context)
@@ -24,6 +34,7 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
+		return context
 
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
@@ -74,6 +85,7 @@ def get_context(context):
 		}
 		
 	context.student = student
+	context.greeting = get_greeting()
 	student_id = student.get("name")
 	student_dept = student.get("department") or "CSE"
 	sem_num = parse_sem_num(student.get("semester"))

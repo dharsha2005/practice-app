@@ -19,6 +19,7 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
+		return context
 
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
@@ -26,6 +27,7 @@ def get_context(context):
 
 	if is_admin and not preview_mode:
 		frappe.redirect("/app")
+		return context
 
 	req_student = frappe.form_dict.get("student")
 	
@@ -40,9 +42,10 @@ def get_context(context):
 	student_id = student_doc.get("name") if student_doc else None
 	raw_sem = student_doc.get("semester") if student_doc else "1"
 	max_allowed_sem = parse_sem_num(raw_sem)
+	max_completed_sem = max(0, max_allowed_sem - 1)
 
 	# === FETCH MARKS STRICTLY FROM Marks DocType ===
-	# Only show marks for semesters <= student's current semester (REAL-TIME boundary)
+	# Only show marks for completed semesters (< current ongoing semester)
 	raw_marks = []
 	if student_id:
 		raw_marks = frappe.get_all(
@@ -52,13 +55,13 @@ def get_context(context):
 			order_by="semester asc, subject asc"
 		)
 
-	# Group marks by semester, strictly filtering out future semesters
+	# Group marks by semester, strictly filtering out current ongoing and future semesters
 	semesters_data = {}
 	for m in raw_marks:
 		sem_str = m.get("semester") or "Semester 1"
 		s_num = parse_sem_num(sem_str)
-		# STRICT: only include semesters the student has completed or is currently in
-		if s_num > max_allowed_sem:
+		# STRICT: only include completed semesters (prior to student's current ongoing semester)
+		if s_num > max_completed_sem or max_completed_sem == 0:
 			continue
 		key = f"Semester {s_num}"
 		if key not in semesters_data:
@@ -81,10 +84,14 @@ def get_context(context):
 			# Credits: count of subjects * 3 (standard credit assumption)
 			credits = len(subjs) * 3
 		else:
+			total_obtained = 0
+			total_possible = 0
 			sgpa = 0.0
 			credits = 0
 		sem_val["sgpa"] = sgpa
 		sem_val["credits"] = credits
+		sem_val["obtained"] = total_obtained
+		sem_val["possible"] = total_possible
 
 	# Sort semesters in ascending order
 	allowed_semesters = dict(
@@ -114,7 +121,9 @@ def get_context(context):
 
 	context.student = student_doc or {}
 	context.max_allowed_sem = max_allowed_sem
+	context.max_completed_sem = max_completed_sem
 	context.current_sem_title = f"Semester {max_allowed_sem}"
+	context.completed_sem_title = f"Semester {max_completed_sem}" if max_completed_sem > 0 else "N/A"
 	context.semesters = allowed_semesters
 	context.cgpa = cgpa
 	context.has_marks = bool(allowed_semesters)

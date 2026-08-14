@@ -1,38 +1,7 @@
 {% extends "templates/portal_base.html" %}
 
 {% block content %}
-<!-- Sidebar Navigation -->
-<aside class="portal-sidebar" id="portalSidebar">
-	<div class="sidebar-header d-flex align-items-center justify-content-between">
-		<div class="d-flex align-items-center gap-2">
-			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
-				<i class="bi bi-mortarboard-fill"></i>
-			</div>
-			<div>
-				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
-				<small class="text-muted fs-7">Academic System</small>
-			</div>
-		</div>
-	</div>
-
-	<div class="py-2">
-		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
-		<div class="sidebar-group-title">ACADEMICS</div>
-		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
-		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
-		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
-		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
-		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
-
-		<div class="sidebar-group-title">ACCOUNT</div>
-		<a href="/student/profile" class="sidebar-link active"><i class="bi bi-person"></i> Profile</a>
-		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
-	</div>
-
-	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
-		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
-	</div>
-</aside>
+{% include "templates/includes/portal_sidebar.html" %}
 
 <div class="portal-content-wrapper">
 	<!-- Top Bar -->
@@ -173,6 +142,28 @@
 					</div>
 					<div id="photo-upload-alert" class="alert d-none py-2 px-3 small"></div>
 					<button type="submit" id="save-photo-btn" class="btn btn-academic-primary w-100 py-2">Save Photo</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow-lg">
+			<div class="modal-header border-bottom bg-primary text-white">
+				<h5 class="modal-title fw-bold"><i class="bi bi-camera me-2"></i> Update Profile Photo</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="photo-upload-form">
+					<input type="hidden" id="photo-student-id" value="{{ student.name }}">
+					<div class="mb-3">
+						<label class="form-label small fw-semibold text-muted">Choose Image File (JPG, PNG)</label>
+						<input type="file" class="form-control" id="photo-file-input" accept="image/*" required>
+					</div>
+					<div id="photo-upload-alert" class="alert d-none py-2 px-3 small"></div>
+					<button type="submit" id="save-photo-btn" class="btn btn-academic-primary w-100 py-2.5 fw-bold">Save Photo</button>
 				</form>
 			</div>
 		</div>

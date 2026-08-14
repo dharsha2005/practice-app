@@ -9,7 +9,9 @@ def get_context(context):
 		roles = frappe.get_roles(frappe.session.user)
 		if "Student" in roles:
 			frappe.redirect("/student")
+			return context
 		else:
 			frappe.redirect("/app")
+			return context
 
 	return context

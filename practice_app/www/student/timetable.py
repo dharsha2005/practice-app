@@ -1,4 +1,5 @@
 import frappe
+import hashlib
 
 base_template_path = "templates/portal_base.html"
 
@@ -21,6 +22,7 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
+		return context
 
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
@@ -28,6 +30,7 @@ def get_context(context):
 
 	if is_admin and not preview_mode:
 		frappe.redirect("/app")
+		return context
 
 	# Fetch student details
 	student_doc = (
@@ -55,8 +58,6 @@ def get_context(context):
 	)
 
 	# Build a structured timetable from courses
-	# Assign courses to days and periods deterministically
-	import hashlib
 	timetable = {}
 	for day in DAYS:
 		timetable[day] = {}

@@ -18,6 +18,7 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
+		return context
 
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
@@ -25,6 +26,7 @@ def get_context(context):
 
 	if is_admin and not preview_mode:
 		frappe.redirect("/app")
+		return context
 
 	# Fetch student details
 	student_doc = (
@@ -42,12 +44,13 @@ def get_context(context):
 
 	# Build Course Material filters for this student's department and current semester
 	filters = {}
+	dept_name = None
 	if student_dept:
 		# Get matching department name used in Course Material
 		dept_name = frappe.db.get_value("Department", {"department_name": student_dept}, "name") or \
 					frappe.db.get_value("Department", {"department_code": student_dept}, "name") or \
 					student_dept
-	
+
 	# Fetch all course materials for this student's active courses
 	# Filter by: courses linked to their dept + current semester
 	course_names = frappe.get_all(

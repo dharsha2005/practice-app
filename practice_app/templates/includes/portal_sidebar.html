@@ -1,0 +1,73 @@
+<!-- Sidebar Navigation Include -->
+<aside class="portal-sidebar d-flex flex-column justify-content-between" id="portalSidebar" style="height: 100vh; position: fixed; top: 0; left: 0;">
+	<div>
+		<div class="sidebar-header d-flex align-items-center justify-content-between">
+			<div class="d-flex align-items-center gap-2">
+				<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">
+					<i class="bi bi-mortarboard-fill"></i>
+				</div>
+				<div>
+					<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
+					<small class="text-muted fs-7">Academic System</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="py-2">
+			<a href="/student" class="sidebar-link" data-path="/student"><i class="bi bi-grid-fill"></i> Dashboard</a>
+			
+			<div class="sidebar-group-title">ACADEMICS</div>
+			<a href="/student/courses" class="sidebar-link" data-path="/student/courses"><i class="bi bi-journal-bookmark"></i> Courses</a>
+			<a href="/student/timetable" class="sidebar-link" data-path="/student/timetable"><i class="bi bi-calendar-week"></i> Timetable</a>
+			<a href="/student/calendar" class="sidebar-link" data-path="/student/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+			<a href="/student/hallticket" class="sidebar-link" data-path="/student/hallticket"><i class="bi bi-card-heading"></i> Hall Ticket</a>
+			<a href="/student/attendance" class="sidebar-link" data-path="/student/attendance"><i class="bi bi-calendar-check"></i> Attendance</a>
+			<a href="/student/assignments" class="sidebar-link" data-path="/student/assignments"><i class="bi bi-file-earmark-text"></i> Assignments</a>
+			<a href="/student/marks" class="sidebar-link" data-path="/student/marks"><i class="bi bi-award"></i> Results</a>
+			<a href="/student/materials" class="sidebar-link" data-path="/student/materials"><i class="bi bi-journal-text"></i> Materials</a>
+
+			<div class="sidebar-group-title">SERVICES</div>
+			<a href="/student/certificates" class="sidebar-link" data-path="/student/certificates"><i class="bi bi-award-fill"></i> Certificates</a>
+			<a href="/student/leave" class="sidebar-link" data-path="/student/leave"><i class="bi bi-calendar-minus"></i> Leave Application</a>
+			<a href="/student/library" class="sidebar-link" data-path="/student/library"><i class="bi bi-book"></i> Library Books</a>
+			<a href="/student/feedback" class="sidebar-link" data-path="/student/feedback"><i class="bi bi-star"></i> Course Feedback</a>
+			<a href="/student/support" class="sidebar-link" data-path="/student/support"><i class="bi bi-headset"></i> Support</a>
+
+			<div class="sidebar-group-title">ACCOUNT</div>
+			<a href="/student/profile" class="sidebar-link" data-path="/student/profile"><i class="bi bi-person"></i> Profile</a>
+			<a href="/student/notifications" class="sidebar-link" data-path="/student/notifications"><i class="bi bi-bell"></i> Notifications</a>
+			<a href="/student/settings" class="sidebar-link" data-path="/student/settings"><i class="bi bi-gear"></i> Settings</a>
+		</div>
+	</div>
+
+	<!-- Sidebar Profile Dropup Menu (Left Corner Profile actions) -->
+	<div class="p-3 border-top border-secondary border-opacity-25 dropup">
+		<div class="d-flex align-items-center gap-2 p-2 rounded sidebar-profile-btn" style="cursor: pointer;" id="sidebarProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+			<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border border-secondary" style="width: 36px; height: 36px; object-fit: cover;">
+			<div class="text-start leading-tight flex-grow-1 overflow-hidden" style="min-width: 0;">
+				<span class="fw-bold d-block text-white small text-truncate" style="font-size: 0.82rem; line-height: 1.2;">{{ student.student_name or 'Student' }}</span>
+				<small class="text-muted d-block text-truncate" style="font-size: 0.70rem; line-height: 1.1;">{{ student.register_number or student.name }}</small>
+			</div>
+			<i class="bi bi-chevron-expand text-muted ms-auto"></i>
+		</div>
+		<ul class="dropdown-menu dropdown-menu-dark shadow border border-secondary border-opacity-25 w-100 mt-2" aria-labelledby="sidebarProfileDropdown" style="border-radius: 12px; background-color: #1e293b; z-index: 1050;">
+			<li><a class="dropdown-item py-2 text-light small d-flex align-items-center gap-2" href="/student/settings"><i class="bi bi-gear text-muted"></i> Settings</a></li>
+			<li><a class="dropdown-item py-2 text-light small d-flex align-items-center gap-2" href="/student/profile"><i class="bi bi-person text-muted"></i> View Profile</a></li>
+			<li><hr class="dropdown-divider border-secondary border-opacity-25 my-1"></li>
+			<li><a class="dropdown-item py-2 text-danger small d-flex align-items-center gap-2" href="#" onclick="return portalLogout();"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+		</ul>
+	</div>
+</aside>
+<script>
+// Highlight active sidebar link based on current URL path
+(function() {
+	var currentPath = window.location.pathname.replace(/\/$/, '');
+	document.querySelectorAll('.sidebar-link[data-path]').forEach(function(el) {
+		var linkPath = el.getAttribute('data-path').replace(/\/$/, '');
+		// Exact match, or dashboard root match
+		if (currentPath === linkPath || (linkPath === '/student' && currentPath === '/student')) {
+			el.classList.add('active');
+		}
+	});
+})();
+</script>

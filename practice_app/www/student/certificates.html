@@ -1,42 +1,7 @@
 {% extends "templates/portal_base.html" %}
 
 {% block content %}
-<!-- Sidebar Navigation -->
-<aside class="portal-sidebar" id="portalSidebar">
-	<div class="sidebar-header d-flex align-items-center justify-content-between">
-		<div class="d-flex align-items-center gap-2">
-			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
-				<i class="bi bi-mortarboard-fill"></i>
-			</div>
-			<div>
-				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
-				<small class="text-muted fs-7">Academic System</small>
-			</div>
-		</div>
-	</div>
-
-	<div class="py-2">
-		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
-		<div class="sidebar-group-title">ACADEMICS</div>
-		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
-		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
-		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
-		<a href="/student/assignments" class="sidebar-link"><i class="bi bi-file-earmark-text"></i> Assignments</a>
-		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
-
-		<div class="sidebar-group-title">SERVICES</div>
-		<a href="/student/certificates" class="sidebar-link active"><i class="bi bi-award-fill"></i> Certificates</a>
-		<a href="/student/leave" class="sidebar-link"><i class="bi bi-calendar-minus"></i> Leave Application</a>
-
-		<div class="sidebar-group-title">ACCOUNT</div>
-		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
-		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
-	</div>
-
-	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
-		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
-	</div>
-</aside>
+{% include "templates/includes/portal_sidebar.html" %}
 
 <div class="portal-content-wrapper">
 	<!-- Top Bar -->

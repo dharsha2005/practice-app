@@ -1,0 +1,191 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+{% include "templates/includes/portal_sidebar.html" %}
+
+<div class="portal-content-wrapper">
+	<header class="bg-white border-bottom py-2 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Academic Calendar</h5>
+		</div>
+		<div class="d-flex align-items-center gap-3">
+			<a href="/student/notifications" class="btn btn-light rounded-circle p-2 position-relative" style="width:40px;height:40px;"><i class="bi bi-bell text-muted"></i></a>
+			<div class="dropdown">
+				<div class="d-flex align-items-center gap-2" style="cursor:pointer;" id="profileHeaderDropdown" data-bs-toggle="dropdown">
+					<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border" style="width:38px;height:38px;object-fit:cover;">
+					<div class="d-none d-md-block text-start">
+						<span class="fw-bold d-block text-dark small">{{ student.student_name or 'Student' }}</span>
+						<small class="text-muted" style="font-size:0.75rem;">{{ student.register_number or '' }}</small>
+					</div>
+				</div>
+				<ul class="dropdown-menu dropdown-menu-end shadow mt-2" style="border-radius:12px;min-width:170px;">
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/settings"><i class="bi bi-gear-fill text-muted"></i> Settings</a></li>
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/profile"><i class="bi bi-person-badge-fill text-muted"></i> View Profile</a></li>
+					<li><hr class="dropdown-divider my-1"></li>
+					<li><a class="dropdown-item py-2 text-danger small d-flex align-items-center gap-2" href="#" onclick="return portalLogout();"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Legend -->
+		<div class="d-flex flex-wrap gap-3 mb-4 align-items-center">
+			<h4 class="fw-extrabold mb-0 me-auto">Academic Calendar</h4>
+			<span class="badge rounded-pill px-3 py-2" style="background:#ef4444;">📝 Assignment Due</span>
+			<span class="badge rounded-pill px-3 py-2" style="background:#10b981;">✅ Leave Approved</span>
+			<span class="badge rounded-pill px-3 py-2" style="background:#f59e0b;">🏖️ Leave Pending</span>
+			<span class="badge rounded-pill px-3 py-2" style="background:#6366f1;">📢 Announcement</span>
+		</div>
+
+		<!-- Calendar Controls -->
+		<div class="academic-card p-4 bg-white mb-4">
+			<div class="d-flex align-items-center justify-content-between mb-4">
+				<button class="btn btn-academic-outline btn-sm px-3" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
+				<h5 class="fw-bold mb-0" id="monthYearLabel">Loading...</h5>
+				<button class="btn btn-academic-outline btn-sm px-3" id="nextMonth"><i class="bi bi-chevron-right"></i></button>
+			</div>
+			<!-- Day headers -->
+			<div class="row g-0 mb-2" id="dayHeaders">
+				{% for d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] %}
+				<div class="col text-center small fw-bold text-muted py-1">{{ d }}</div>
+				{% endfor %}
+			</div>
+			<!-- Calendar Grid -->
+			<div id="calendarGrid" class="row g-0"></div>
+		</div>
+
+		<!-- Events for selected day -->
+		<div class="academic-card p-4 bg-white" id="dayEventsPanel" style="display:none;">
+			<h6 class="fw-bold mb-3" id="dayEventsTitle">Events</h6>
+			<div id="dayEventsList" class="d-flex flex-column gap-2"></div>
+		</div>
+	</div>
+</div>
+
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+
+<script>
+const EVENTS = {{ calendar_events_json }};
+const TODAY = "{{ today_str }}";
+
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+let currentDate = new Date(TODAY);
+let viewYear = currentDate.getFullYear();
+let viewMonth = currentDate.getMonth();
+
+function buildEventMap() {
+	const map = {};
+	EVENTS.forEach(ev => {
+		const d = ev.date ? ev.date.substring(0,10) : null;
+		if (!d) return;
+		if (!map[d]) map[d] = [];
+		map[d].push(ev);
+	});
+	return map;
+}
+
+function renderCalendar() {
+	const eventMap = buildEventMap();
+	const label = document.getElementById("monthYearLabel");
+	label.textContent = MONTH_NAMES[viewMonth] + " " + viewYear;
+
+	const grid = document.getElementById("calendarGrid");
+	grid.innerHTML = "";
+
+	const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+	const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+	let cells = [];
+	for (let i = 0; i < firstDay; i++) cells.push(null);
+	for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+	while (cells.length % 7 !== 0) cells.push(null);
+
+	for (let row = 0; row < cells.length / 7; row++) {
+		const rowDiv = document.createElement("div");
+		rowDiv.className = "row g-0";
+		for (let col = 0; col < 7; col++) {
+			const day = cells[row * 7 + col];
+			const cell = document.createElement("div");
+			cell.className = "col border-top border-start";
+			cell.style.minHeight = "80px";
+			cell.style.padding = "4px";
+
+			if (day) {
+				const dateStr = viewYear + "-" + String(viewMonth+1).padStart(2,"0") + "-" + String(day).padStart(2,"0");
+				const isToday = dateStr === TODAY;
+				const dayNum = document.createElement("div");
+				dayNum.className = "fw-bold small mb-1 d-flex align-items-center justify-content-center rounded-circle";
+				dayNum.style.cssText = `width:26px;height:26px;font-size:0.78rem;${isToday ? "background:var(--navy-primary);color:white;" : ""}`;
+				dayNum.textContent = day;
+				cell.appendChild(dayNum);
+
+				// Events dots
+				const evs = eventMap[dateStr] || [];
+				evs.slice(0,3).forEach(ev => {
+					const dot = document.createElement("div");
+					dot.className = "rounded px-1 mb-1 text-white fw-semibold text-truncate";
+					dot.style.cssText = `font-size:0.62rem;line-height:1.5;background:${ev.color};cursor:pointer;`;
+					dot.textContent = ev.title;
+					dot.title = ev.title;
+					cell.appendChild(dot);
+				});
+				if (evs.length > 3) {
+					const more = document.createElement("div");
+					more.className = "text-muted";
+					more.style.fontSize = "0.62rem";
+					more.textContent = `+${evs.length-3} more`;
+					cell.appendChild(more);
+				}
+
+				cell.style.cursor = evs.length ? "pointer" : "default";
+				cell.addEventListener("click", () => showDayEvents(dateStr, evs));
+			} else {
+				cell.style.background = "#f8fafc";
+			}
+			rowDiv.appendChild(cell);
+		}
+		grid.appendChild(rowDiv);
+	}
+}
+
+function showDayEvents(dateStr, evs) {
+	const panel = document.getElementById("dayEventsPanel");
+	const title = document.getElementById("dayEventsTitle");
+	const list = document.getElementById("dayEventsList");
+
+	if (!evs.length) { panel.style.display = "none"; return; }
+
+	// Format date nicely
+	const d = new Date(dateStr + "T00:00:00");
+	title.textContent = `Events on ${d.toLocaleDateString("en-IN", {weekday:"long", year:"numeric", month:"long", day:"numeric"})}`;
+	list.innerHTML = "";
+	evs.forEach(ev => {
+		const item = document.createElement("div");
+		item.className = "d-flex align-items-center gap-3 p-3 rounded border";
+		item.innerHTML = `<div class="rounded-circle" style="width:12px;height:12px;background:${ev.color};flex-shrink:0;"></div><span class="fw-semibold small text-dark">${ev.title}</span>`;
+		list.appendChild(item);
+	});
+	panel.style.display = "block";
+	panel.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+	viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+	renderCalendar();
+});
+document.getElementById("nextMonth").addEventListener("click", () => {
+	viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+	renderCalendar();
+});
+
+renderCalendar();
+</script>
+{% endblock %}

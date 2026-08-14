@@ -69,13 +69,15 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
-	
+		return context
+
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
 	preview_mode = frappe.form_dict.get("preview") or frappe.form_dict.get("view") == "portal" or frappe.form_dict.get("student")
 
 	if is_admin and not preview_mode:
 		frappe.redirect("/app")
+		return context
 	
 	req_student = frappe.form_dict.get("student")
 	

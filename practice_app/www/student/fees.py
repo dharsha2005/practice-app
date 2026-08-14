@@ -9,6 +9,7 @@ def get_context(context):
 	
 	if user == "Guest":
 		frappe.redirect("/login")
+		return context
 
 	roles = frappe.get_roles(user)
 	is_admin = "System Manager" in roles or "Administrator" in roles or "Faculty" in roles
@@ -16,6 +17,14 @@ def get_context(context):
 
 	if is_admin and not preview_mode:
 		frappe.redirect("/app")
+		return context
+
+	# Fetch student for sidebar and context
+	student_doc = (
+		frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name", "register_number", "student_photo"], as_dict=True)
+		or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name", "register_number", "student_photo"], as_dict=True)
+	)
+	context.student = student_doc or {}
 
 	req_student = frappe.form_dict.get("student")
 	

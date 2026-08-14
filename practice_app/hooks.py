@@ -8,6 +8,29 @@ app_publisher = "Dharshan"
 app_description = "Production-ready Student Management Portal built on Frappe Framework v17"
 app_email = "admin@studentportal.local"
 app_license = "mit"
+app_icon = "/assets/practice_app/images/practice_app.svg"
+app_logo_url = "/assets/practice_app/images/practice_app.svg"
+app_include_icons = [
+	"/assets/practice_app/images/practice_app_icons.svg"
+]
+add_to_apps_screen = [
+	{
+		"name": "practice_app",
+		"title": "Student Management Portal",
+		"logo": "/assets/practice_app/images/practice_app.svg",
+		"route": "/desk/student-portal"
+	},
+	{
+		"name": "college_admin",
+		"title": "College Admin",
+		"logo": "/assets/practice_app/images/practice_app.svg",
+		"route": "/app/college-admin"
+	}
+]
+# Session Boot Hooks
+boot_session = [
+	"practice_app.utils.boot_session"
+]
 
 # JSON Request Body handling per Frappe v17 standard
 use_json_request_body = True
@@ -83,6 +106,10 @@ doc_events = {
 		"validate": "practice_app.utils.validate_marks",
 		"on_update": "practice_app.utils.on_marks_submit",
 		"after_insert": "practice_app.utils.on_marks_submit"
+	},
+	"AssignmentSubmission": {
+		"validate": "practice_app.utils.validate_assignment_submission",
+		"on_update": "practice_app.utils.on_assignment_submission_update"
 	}
 }
 

@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-08-11 17:10:58.656891",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "course",
+  "course_code",
+  "course_name",
+  "exam_date",
+  "exam_time",
+  "hall_no"
+ ],
+ "fields": [
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Course",
+   "options": "Course",
+   "reqd": 1
+  },
+  {
+   "fieldname": "course_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Course Code"
+  },
+  {
+   "fieldname": "course_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Course Name"
+  },
+  {
+   "fieldname": "exam_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Exam Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "exam_time",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Exam Time Slot",
+   "options": "09:00 AM - 12:00 PM\n02:00 PM - 05:00 PM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "hall_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Hall / Room No"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-11 17:10:58.656891",
+ "modified_by": "Administrator",
+ "module": "Practice App",
+ "name": "Exam Schedule Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

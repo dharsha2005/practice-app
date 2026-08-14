@@ -370,6 +370,24 @@ def submit_certificate_request(certificate_type: str, reason: Optional[str] = No
 	cert.insert(ignore_permissions=True)
 	frappe.db.commit()
 
+	try:
+		from practice_app.utils import send_resend_email
+		subject = f"⚡ Realtime Alert: Certificate Request ({certificate_type}) Received"
+		html = f"""
+		<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+			<h2 style="color: #6366f1;">EduPortal Academic Certificate Request</h2>
+			<p><strong>Student:</strong> {student_doc.get('student_name')}</p>
+			<p><strong>Certificate Requested:</strong> {certificate_type}</p>
+			<p><strong>Reason:</strong> {reason or '-'}</p>
+			<p><strong>Status:</strong> <span style="color: #f59e0b; font-weight: bold;">Pending Verification</span></p>
+			<hr>
+			<p style="font-size: 12px; color: #64748b;">Powered by Resend API Realtime Engine.</p>
+		</div>
+		"""
+		send_resend_email(subject, html, user)
+	except Exception:
+		pass
+
 	return {
 		"status": "success",
 		"message": _("Certificate request submitted successfully! Academic office will verify your request."),
@@ -413,6 +431,24 @@ def submit_assignment(assignment_name: str, comments: Optional[str] = None, subm
 			"submission_id": existing
 		}
 
+	# Check file validation
+	if submitted_file:
+		import os
+		allowed_extensions = {".pdf", ".zip", ".txt", ".py", ".java", ".cpp", ".png", ".jpg", ".jpeg", ".docx", ".xlsx"}
+		# Strip query params like ?v=...
+		clean_url = submitted_file.split("?")[0]
+		ext = os.path.splitext(clean_url)[1].lower()
+		if ext not in allowed_extensions:
+			frappe.throw(_("Invalid file format. Allowed formats: PDF, ZIP, TXT, DOCX, XLSX, Images, or Code files."))
+
+	# Validate late submission
+	due_date = frappe.db.get_value("Assignment", assignment_name, "due_date")
+	status = "Submitted"
+	if due_date:
+		from frappe.utils import getdate
+		if getdate(frappe.utils.today()) > getdate(due_date):
+			status = "Late"
+
 	# Create real submission record
 	submission = frappe.get_doc({
 		"doctype": "AssignmentSubmission",
@@ -420,16 +456,49 @@ def submit_assignment(assignment_name: str, comments: Optional[str] = None, subm
 		"student": student_doc.get("name"),
 		"student_name": student_doc.get("student_name"),
 		"submission_date": frappe.utils.today(),
-		"status": "Submitted",
+		"status": status,
 		"comments": comments or "",
 		"submitted_file": submitted_file or ""
 	})
 	submission.insert(ignore_permissions=True)
+	
+	# Link the uploaded file record in MariaDB File manager to this submission name
+	if submitted_file:
+		frappe.db.set_value("File", {"file_url": submitted_file}, {
+			"attached_to_doctype": "AssignmentSubmission",
+			"attached_to_name": submission.name
+		})
+
 	frappe.db.commit()
+
+	# Trigger Realtime Email Notification via Resend API
+	try:
+		from practice_app.utils import send_resend_email
+		assg_title = frappe.db.get_value("Assignment", assignment_name, "title") or assignment_name
+		email_subject = f"⚡ Realtime Alert: Assignment Submitted for {student_doc.get('student_name')}"
+		html = f"""
+		<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+			<h2 style="color: #6366f1;">EduPortal Realtime Assignment Submission</h2>
+			<p><strong>Student:</strong> {student_doc.get('student_name')}</p>
+			<p><strong>Assignment:</strong> {assg_title}</p>
+			<p><strong>Status:</strong> <span style="color: {'#ef4444' if status == 'Late' else '#10b981'}; font-weight: bold;">{status}</span></p>
+			<p><strong>Submitted File:</strong> {submitted_file or 'No file attached'}</p>
+			<p><strong>Comments:</strong> {comments or '-'}</p>
+			<hr>
+			<p style="font-size: 12px; color: #64748b;">Powered by Resend API Realtime Engine.</p>
+		</div>
+		"""
+		send_resend_email(email_subject, html, user)
+	except Exception:
+		pass
+
+	msg = _("Assignment submitted successfully!")
+	if status == "Late":
+		msg = _("Assignment submitted successfully! (Submitted past the due date)")
 
 	return {
 		"status": "success",
-		"message": _("Assignment submitted successfully! Your submission is now under faculty review."),
+		"message": msg,
 		"submission_id": submission.name
 	}
 
@@ -504,6 +573,25 @@ def submit_leave_application(leave_type: str, from_date: str, to_date: str, reas
 	leave.insert(ignore_permissions=True)
 	frappe.db.commit()
 
+	try:
+		from practice_app.utils import send_resend_email
+		subject = f"⚡ Realtime Alert: Leave Application Submitted by {student_doc.get('student_name')}"
+		html = f"""
+		<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+			<h2 style="color: #f59e0b;">EduPortal Leave Application Request</h2>
+			<p><strong>Student:</strong> {student_doc.get('student_name')}</p>
+			<p><strong>Leave Category:</strong> {leave_type}</p>
+			<p><strong>Dates:</strong> {from_date} to {to_date} ({days} days)</p>
+			<p><strong>Reason:</strong> {reason}</p>
+			<p><strong>Status:</strong> <span style="color: #f59e0b; font-weight: bold;">Pending Approval</span></p>
+			<hr>
+			<p style="font-size: 12px; color: #64748b;">Powered by Resend API Realtime Engine.</p>
+		</div>
+		"""
+		send_resend_email(subject, html, user)
+	except Exception:
+		pass
+
 	return {
 		"status": "success",
 		"message": _("Leave application submitted successfully! It is now pending faculty approval."),
@@ -538,4 +626,122 @@ def cancel_leave_application(leave_id: str) -> Dict[str, Any]:
 	return {
 		"status": "success",
 		"message": _("Leave application cancelled successfully.")
+	}
+
+# ==================================================
+# COURSE FEEDBACK & ONLINE FEE PAYMENT APIs
+# ==================================================
+
+@frappe.whitelist()
+def submit_course_feedback(course: str, rating: int, comments: Optional[str] = None, teaching_quality: Optional[int] = 5, content_quality: Optional[int] = 5) -> Dict[str, Any]:
+	"""Submits student feedback for a course."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in to submit feedback."), frappe.PermissionError)
+
+	student_doc = (
+		frappe.db.get_value("Student-form", {"email": user}, ["name", "student_name", "semester"], as_dict=True)
+		or frappe.db.get_value("Student-form", {"owner": user}, ["name", "student_name", "semester"], as_dict=True)
+	)
+	if not student_doc:
+		frappe.throw(_("Student record not found."))
+
+	course_name = frappe.db.get_value("Course", course, "course_name") or course
+
+	fb = frappe.get_doc({
+		"doctype": "Course Feedback",
+		"student": student_doc.get("name"),
+		"student_name": student_doc.get("student_name"),
+		"course": course,
+		"course_name": course_name,
+		"semester": student_doc.get("semester"),
+		"rating": int(rating or 5),
+		"teaching_quality": int(teaching_quality or 5),
+		"content_quality": int(content_quality or 5),
+		"comments": comments or "",
+		"submitted_on": frappe.utils.today()
+	})
+	fb.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Thank you! Your course feedback has been submitted successfully."),
+		"feedback_id": fb.name
+	}
+
+@frappe.whitelist()
+def pay_fee_online(fee_id: str, amount: float) -> Dict[str, Any]:
+	"""Simulates online fee payment processing and updates Fee record."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in."), frappe.PermissionError)
+
+	fee = frappe.get_doc("Fee", fee_id)
+	paid = float(fee.paid_amount or 0) + float(amount)
+	total = float(fee.total_amount or 0)
+	outstanding = max(0.0, total - paid)
+	status = "Paid" if outstanding <= 0 else "Partially Paid"
+
+	fee.paid_amount = paid
+	fee.outstanding_amount = outstanding
+	fee.status = status
+	fee.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	try:
+		from practice_app.utils import send_resend_email
+		student_name = frappe.db.get_value("Student-form", fee.student, "student_name") or fee.student
+		subject = f"⚡ Instant Receipt: Online Fee Payment of ₹{amount} Received"
+		html = f"""
+		<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 600px;">
+			<h2 style="color: #10b981;">EduPortal Official Fee Payment Receipt</h2>
+			<p><strong>Invoice Ref:</strong> {fee.name}</p>
+			<p><strong>Student:</strong> {student_name}</p>
+			<p><strong>Amount Paid:</strong> ₹{amount:,.2f}</p>
+			<p><strong>Total Paid to Date:</strong> ₹{paid:,.2f}</p>
+			<p><strong>Remaining Outstanding:</strong> ₹{outstanding:,.2f}</p>
+			<p><strong>Status:</strong> <span style="color: {'#10b981' if status == 'Paid' else '#f59e0b'}; font-weight: bold;">{status}</span></p>
+			<hr>
+			<p style="font-size: 12px; color: #64748b;">Powered by Resend API Realtime Engine.</p>
+		</div>
+		"""
+		send_resend_email(subject, html, user)
+	except Exception:
+		pass
+
+	return {
+		"status": "success",
+		"message": _("Payment of ₹{0} successful! Remaining outstanding: ₹{1}").format(amount, outstanding),
+		"fee_status": status,
+		"outstanding": outstanding
+	}
+
+@frappe.whitelist()
+def update_student_profile(phone_number: Optional[str] = None, address: Optional[str] = None, city: Optional[str] = None, state: Optional[str] = None, pincode: Optional[str] = None) -> Dict[str, Any]:
+	"""Updates contact/address details for logged-in student."""
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Please log in."), frappe.PermissionError)
+
+	student_name = (
+		frappe.db.get_value("Student-form", {"email": user}, "name")
+		or frappe.db.get_value("Student-form", {"owner": user}, "name")
+	)
+	if not student_name:
+		frappe.throw(_("Student record not found."))
+
+	doc = frappe.get_doc("Student-form", student_name)
+	if phone_number is not None: doc.phone_number = phone_number
+	if address is not None: doc.address = address
+	if city is not None: doc.city = city
+	if state is not None: doc.state = state
+	if pincode is not None: doc.pincode = pincode
+
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"status": "success",
+		"message": _("Profile details updated successfully!")
 	}

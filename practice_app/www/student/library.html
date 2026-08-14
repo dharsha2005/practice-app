@@ -1,0 +1,137 @@
+{% extends "templates/portal_base.html" %}
+
+{% block content %}
+{% include "templates/includes/portal_sidebar.html" %}
+
+<div class="portal-content-wrapper">
+	<header class="bg-white border-bottom py-2 px-4 sticky-top d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center gap-3">
+			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
+			<h5 class="fw-bold mb-0">Library Portal</h5>
+		</div>
+		<div class="d-flex align-items-center gap-3">
+			<a href="/student/notifications" class="btn btn-light rounded-circle p-2 position-relative" style="width:40px;height:40px;"><i class="bi bi-bell text-muted"></i></a>
+			<div class="dropdown">
+				<div class="d-flex align-items-center gap-2" style="cursor:pointer;" id="profileHeaderDropdown" data-bs-toggle="dropdown">
+					<img src="{{ student.student_photo or 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }}" alt="Student" class="rounded-circle border" style="width:38px;height:38px;object-fit:cover;">
+					<div class="d-none d-md-block text-start">
+						<span class="fw-bold d-block text-dark small">{{ student.student_name or 'Student' }}</span>
+						<small class="text-muted" style="font-size:0.75rem;">{{ student.register_number or '' }}</small>
+					</div>
+				</div>
+				<ul class="dropdown-menu dropdown-menu-end shadow mt-2" style="border-radius:12px;min-width:170px;">
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/settings"><i class="bi bi-gear-fill text-muted"></i> Settings</a></li>
+					<li><a class="dropdown-item py-2 small d-flex align-items-center gap-2" href="/student/profile"><i class="bi bi-person-badge-fill text-muted"></i> View Profile</a></li>
+					<li><hr class="dropdown-divider my-1"></li>
+					<li><a class="dropdown-item py-2 text-danger small d-flex align-items-center gap-2" href="#" onclick="return portalLogout();"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<div class="p-4 p-md-5">
+		<!-- Summary Cards -->
+		<div class="row g-4 mb-4">
+			<div class="col-sm-6 col-xl-3">
+				<div class="academic-card p-4 bg-white d-flex align-items-center justify-content-between">
+					<div>
+						<div class="stat-number text-primary fs-2">{{ total_issued }}</div>
+						<div class="stat-label text-muted small fw-semibold">Currently Issued</div>
+					</div>
+					<div class="brand-badge bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.3rem;">
+						<i class="bi bi-book"></i>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 col-xl-3">
+				<div class="academic-card p-4 bg-white d-flex align-items-center justify-content-between">
+					<div>
+						<div class="stat-number text-danger fs-2">{{ total_overdue }}</div>
+						<div class="stat-label text-muted small fw-semibold">Overdue Books</div>
+					</div>
+					<div class="brand-badge bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.3rem;">
+						<i class="bi bi-exclamation-triangle"></i>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 col-xl-3">
+				<div class="academic-card p-4 bg-white d-flex align-items-center justify-content-between">
+					<div>
+						<div class="stat-number text-success fs-2">{{ total_returned }}</div>
+						<div class="stat-label text-muted small fw-semibold">Returned History</div>
+					</div>
+					<div class="brand-badge bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.3rem;">
+						<i class="bi bi-journal-check"></i>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 col-xl-3">
+				<div class="academic-card p-4 bg-white d-flex align-items-center justify-content-between">
+					<div>
+						<div class="stat-number text-warning fs-2">₹{{ '%.2f'|format(total_fine) }}</div>
+						<div class="stat-label text-muted small fw-semibold">Outstanding Fine</div>
+					</div>
+					<div class="brand-badge bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.3rem;">
+						<i class="bi bi-currency-rupee"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Issued Books Table -->
+		<div class="academic-card p-4 bg-white">
+			<h6 class="fw-bold mb-3"><i class="bi bi-journal-bookmark-fill me-2 text-primary"></i> Library Book Records</h6>
+			<div class="table-responsive">
+				<table class="table align-middle">
+					<thead>
+						<tr>
+							<th>Book Title</th>
+							<th>Author</th>
+							<th>ISBN</th>
+							<th>Issue Date</th>
+							<th>Due Date</th>
+							<th>Status</th>
+							<th>Fine</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for book in books %}
+						<tr>
+							<td><strong class="text-dark">{{ book.book_title }}</strong></td>
+							<td class="text-muted small">{{ book.author or '-' }}</td>
+							<td><small class="badge bg-light text-dark border">{{ book.isbn or '-' }}</small></td>
+							<td class="small">{{ book.issue_date }}</td>
+							<td class="small {{ 'text-danger font-semibold' if book.status == 'Overdue' else '' }}">{{ book.due_date }}</td>
+							<td>
+								{% if book.status == 'Issued' %}
+								<span class="badge bg-primary">Issued</span>
+								{% elif book.status == 'Overdue' %}
+								<span class="badge bg-danger">Overdue</span>
+								{% else %}
+								<span class="badge bg-success">Returned</span>
+								{% endif %}
+							</td>
+							<td><strong class="text-danger">{% if book.fine_amount > 0 %}₹{{ book.fine_amount }}{% else %}-{% endif %}</strong></td>
+						</tr>
+						{% else %}
+						<tr>
+							<td colspan="7" class="text-center text-muted py-5">
+								<i class="bi bi-book fs-2 d-block mb-2"></i>
+								No library book records found for your account.
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<nav class="mobile-bottom-nav">
+	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
+	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
+	<a href="/student/marks" class="mobile-nav-item"><i class="bi bi-award"></i><span>Results</span></a>
+	<a href="/student/profile" class="mobile-nav-item"><i class="bi bi-person"></i><span>Profile</span></a>
+</nav>
+{% endblock %}

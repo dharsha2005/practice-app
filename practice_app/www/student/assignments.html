@@ -1,41 +1,10 @@
 {% extends "templates/portal_base.html" %}
 
 {% block content %}
-<!-- Sidebar Navigation -->
-<aside class="portal-sidebar" id="portalSidebar">
-	<div class="sidebar-header d-flex align-items-center justify-content-between">
-		<div class="d-flex align-items-center gap-2">
-			<div class="brand-badge bg-primary" style="width: 36px; height: 36px; font-size: 1.1rem;">
-				<i class="bi bi-mortarboard-fill"></i>
-			</div>
-			<div>
-				<h6 class="fw-extrabold text-white mb-0">EDU PORTAL</h6>
-				<small class="text-muted fs-7">Academic System</small>
-			</div>
-		</div>
-	</div>
 
-	<div class="py-2">
-		<a href="/student" class="sidebar-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
-		<div class="sidebar-group-title">ACADEMICS</div>
-		<a href="/student/courses" class="sidebar-link"><i class="bi bi-journal-bookmark"></i> Courses</a>
-		<a href="/student/timetable" class="sidebar-link"><i class="bi bi-calendar-week"></i> Timetable</a>
-		<a href="/student/attendance" class="sidebar-link"><i class="bi bi-calendar-check"></i> Attendance</a>
-		<a href="/student/assignments" class="sidebar-link active"><i class="bi bi-file-earmark-text"></i> Assignments</a>
-		<a href="/student/marks" class="sidebar-link"><i class="bi bi-award"></i> Results</a>
-
-		<div class="sidebar-group-title">ACCOUNT</div>
-		<a href="/student/profile" class="sidebar-link"><i class="bi bi-person"></i> Profile</a>
-		<a href="/student/notifications" class="sidebar-link"><i class="bi bi-bell"></i> Notifications</a>
-	</div>
-
-	<div class="p-3 mt-4 border-top border-secondary border-opacity-25">
-		<a href="#" onclick="return portalLogout();" class="btn btn-outline-danger btn-sm w-100 py-2 font-semibold"><i class="bi bi-box-arrow-right me-1.5"></i> Logout</a>
-	</div>
-</aside>
+{% include "templates/includes/portal_sidebar.html" %}
 
 <div class="portal-content-wrapper">
-	<!-- Top Bar -->
 	<header class="bg-white border-bottom py-2.5 px-4 sticky-top d-flex align-items-center justify-content-between">
 		<div class="d-flex align-items-center gap-3">
 			<button class="btn btn-light d-lg-none border p-2" onclick="document.getElementById('portalSidebar').classList.toggle('show')"><i class="bi bi-list fs-4"></i></button>
@@ -51,7 +20,6 @@
 				<p class="text-muted small mb-0">Track due dates, upload solution files, and view faculty feedback.</p>
 			</div>
 
-			<!-- Working Interactive Status Filters -->
 			<div class="d-flex flex-wrap gap-2" id="assignmentFilterGroup">
 				<button class="btn btn-academic-navy btn-sm px-3 filter-btn active" data-filter="all">All ({{ total_count }})</button>
 				<button class="btn btn-academic-outline btn-sm px-3 filter-btn" data-filter="Pending">Pending ({{ pending_count }})</button>
@@ -60,7 +28,6 @@
 			</div>
 		</div>
 
-		<!-- Assignment Cards & Table -->
 		<div class="academic-card p-4 bg-white">
 			<div class="table-responsive">
 				<table class="table align-middle" id="assignmentTable">
@@ -122,7 +89,6 @@
 	</div>
 </div>
 
-<!-- Upload Assignment Modal -->
 <div class="modal fade" id="submitAssignmentModal" tabindex="-1" aria-labelledby="submitAssignmentModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content border-0 shadow-lg">
@@ -157,7 +123,6 @@
 	</div>
 </div>
 
-<!-- Mobile Bottom Nav -->
 <nav class="mobile-bottom-nav">
 	<a href="/student" class="mobile-nav-item"><i class="bi bi-grid-fill"></i><span>Home</span></a>
 	<a href="/student/attendance" class="mobile-nav-item"><i class="bi bi-calendar-check"></i><span>Attendance</span></a>
@@ -167,7 +132,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-	// 1. Working Assignment Category Filter
 	const filterBtns = document.querySelectorAll("#assignmentFilterGroup .filter-btn");
 	const rows = document.querySelectorAll("#assignmentTable .assignment-row");
 
@@ -192,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 
-	// 2. Submit Solution Modal Trigger
 	const openModalBtns = document.querySelectorAll(".open-submit-modal-btn");
 	const submitModal = new bootstrap.Modal(document.getElementById("submitAssignmentModal"));
 
@@ -209,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 
-	// 3. REAL Solution Form Submit Handler — uploads file then calls submit_assignment API
 	const submitForm = document.getElementById("assignment-submit-form");
 	if (submitForm) {
 		submitForm.addEventListener("submit", async function(e) {
@@ -227,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			try {
 				let fileUrl = "";
 
-				// Step 1: Upload file to Frappe Files if a file was selected
 				if (fileInput.files && fileInput.files[0]) {
 					const file = fileInput.files[0];
 					const formData = new FormData();
@@ -249,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function() {
 					}
 				}
 
-				// Step 2: Create AssignmentSubmission record in DocType
 				const resp = await fetch("/api/method/practice_app.api.submit_assignment", {
 					method: "POST",
 					headers: {
@@ -285,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	}
 
-	// Helper to read CSRF token safely
 	function getCsrfToken() {
 		if (window.frappe && window.frappe.csrf_token) {
 			return window.frappe.csrf_token;

@@ -21,7 +21,7 @@ def execute(filters=None):
 			"datasets": [{"name": _("CGPA"), "values": [row["cgpa"] or 0 for row in data[:10]]}]
 		},
 		"type": "line",
-		"colors": ["#10b981"]
+		"colors": ["#10c981"]
 	}
 
 	return columns, data, None, chart
