@@ -745,3 +745,47 @@ def update_student_profile(phone_number: Optional[str] = None, address: Optional
 		"status": "success",
 		"message": _("Profile details updated successfully!")
 	}
+
+
+import frappe
+
+
+@frappe.whitelist(allow_guest=True)
+def customer_api():
+
+    c = frappe.qb.DocType("Course")
+    d = frappe.qb.DocType("Department")
+
+    result = (
+        frappe.qb.from_(c)
+        .inner_join(d)
+        .on(c.course_name == d.department_name)
+        .select(
+            c.name.as_("course"),
+            c.course_name,
+            c.semester,
+            d.name.as_("department"),
+            d.department_name,
+            d.department_code
+        )
+        .limit(10)
+    ).run(as_dict=True)
+
+    if not result:
+        return {"message": "No records found"}
+
+    # Document API
+    course = frappe.get_doc("Course", result[0]["course"])
+    course.semester = 4
+    course.save(ignore_permissions=True)
+
+    # Database API
+    for r in result:
+        frappe.db.set_value(
+            "Course",
+            r["course"],
+            "department",
+            "IT"
+        )
+
+    return result

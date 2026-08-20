@@ -133,3 +133,4 @@ has_permission = {
 	"Student-form": "practice_app.utils.has_student_permission",
 	"Attendance": "practice_app.utils.has_attendance_permission"
 }
+app_include_js = "custom_desk.bundle.js"
