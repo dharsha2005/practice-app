@@ -18,7 +18,7 @@ add_to_apps_screen = [
 		"name": "practice_app",
 		"title": "Student Management Portal",
 		"logo": "/assets/practice_app/images/practice_app.svg",
-		"route": "/desk/student-portal"
+		"route": "/app/student-portal"
 	},
 	{
 		"name": "college_admin",

@@ -13,7 +13,7 @@ def boot_session(bootinfo: Dict[str, Any]) -> None:
 		# Fix Framework icon route so it opens Frappe DocType List (/desk/doctype/DocType)
 		for app in bootinfo.app_data:
 			if app.get("app_name") == "frappe" or app.get("app_title") == "Framework":
-				app["app_route"] = "/desk/doctype/DocType"
+				app["app_route"] = "/app/doctype/DocType"
 
 		if not any(app.get("app_name") == "college_admin" for app in bootinfo.app_data):
 			bootinfo.app_data.append({
@@ -33,7 +33,7 @@ def boot_session(bootinfo: Dict[str, Any]) -> None:
 				"sequence_id": 60,
 				"app_name": "library_workspace",
 				"app_title": "Library",
-				"app_route": "/desk/library",
+				"app_route": "/app/library",
 				"app_logo_url": "/assets/practice_app/images/practice_app.svg",
 				"modules": [],
 				"workspaces": ["Library"]
