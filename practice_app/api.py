@@ -791,7 +791,7 @@ def customer_api():
     return result
 
 @frappe.whitelist()
-def create_task(task_subject):
+def create_task(task_subject: str) -> str:
     task = frappe.new_doc("Task")
     task.subject = task_subject
     task.save()

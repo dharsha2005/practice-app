@@ -1,0 +1,25 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Task ID</th>
+            <th>Subject</th>
+            <th>Created On</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% for (var i=0; i < data.length; i++) { %>
+            <tr>
+                <td>
+                    <%= data[i].name %>
+                </td>
+                <td>
+                    <%= data[i].subject %>
+                </td>
+                <td>
+                    <%= dateutil.str_to_user(data[i].creation) %>
+                </td>
+            </tr>
+            <% } %>
+    </tbody>
+</table>
