@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<style>
+    
+</style>
+<head>
+    <title>{{title}}</title>
+</head>
+
+<body>
+    <h1>Our tasks</h1>
+    <ul>
+        {% for t in task %}
+        <li>
+            <strong>{{ t.subject }}</strong>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

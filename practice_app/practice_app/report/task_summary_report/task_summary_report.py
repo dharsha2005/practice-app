@@ -50,7 +50,6 @@ def execute_snapshot_report(filters: dict | None = None):
 
 	"""
 	from frappe.database.duckdb.database import get_latest_sync
-
 	columns = get_columns()
 	data = get_data()
 

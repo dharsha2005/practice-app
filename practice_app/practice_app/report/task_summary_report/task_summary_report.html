@@ -1,25 +1,38 @@
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Task ID</th>
-            <th>Subject</th>
-            <th>Created On</th>
-        </tr>
-    </thead>
+<div class="container">
+    <h3 class="text-center">Task Summary Report</h3>
 
-    <tbody>
-        <% for (var i=0; i < data.length; i++) { %>
+    <p>
+        <strong>Report Filter:</strong>
+        <%= filters ? filters.subject || "All Tasks" : "All Tasks" %>
+    </p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>
-                    <%= data[i].name %>
-                </td>
-                <td>
-                    <%= data[i].subject %>
-                </td>
-                <td>
-                    <%= dateutil.str_to_user(data[i].creation) %>
-                </td>
+                <th>Task</th>
+                <th>Subject</th>
+                <th>Amount</th>
+                <th>Posting Date</th>
             </tr>
-            <% } %>
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            <% for (var i=0; i < data.length; i++) { %>
+                <tr>
+                    <td>
+                        <%= data[i].task %>
+                    </td>
+                    <td>
+                        <%= data[i].subject %>
+                    </td>
+                    <td>
+                        <%= format_money(data[i].amount) %>
+                    </td>
+                    <td>
+                        <%= dateutil.str_to_user(data[i].posting_date) %>
+                    </td>
+                </tr>
+                <% } %>
+        </tbody>
+    </table>
+</div>

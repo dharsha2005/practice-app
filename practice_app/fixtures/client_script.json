@@ -1,0 +1,57 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "ToDo",
+  "enabled": 0,
+  "modified": "2026-08-05 12:33:39.061728",
+  "module": null,
+  "name": "Create task",
+  "script": "frappe.ui.form.on(\"ToDo\", {\r\n    refresh(frm) {\r\n\r\n        frm.add_custom_button(\"Create Task\", function () {\r\n\r\n            let d = new frappe.ui.Dialog({\r\n                title: \"Create Task\",\r\n                fields: [\r\n                    {\r\n                        label: \"Task Subject\",\r\n                        fieldname: \"task_subject\",\r\n                        fieldtype: \"Data\",\r\n                        reqd: 1\r\n                    }\r\n                ],\r\n                primary_action_label: \"Create Task\",\r\n                primary_action(values) {\r\n\r\n                    frappe.call({\r\n                        method: \"practice_app.api.create_task\",\r\n                        args: {\r\n                            task_subject: values.task_subject\r\n                        },\r\n                        callback: function (r) {\r\n\r\n                            d.hide();\r\n\r\n                            frappe.msgprint({\r\n                                title: \"Success\",\r\n                                indicator: \"green\",\r\n                                message: \"Task Created Successfully<br>Task: \" + r.message\r\n                            });\r\n\r\n                        }\r\n                    });\r\n\r\n                }\r\n            });\r\n\r\n            d.show();\r\n\r\n        });\r\n\r\n    }\r\n});",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Workspace",
+  "enabled": 1,
+  "modified": "2026-08-11 14:29:28.739596",
+  "module": null,
+  "name": "Workspace List Add Button",
+  "script": "\nfrappe.listview_settings['Workspace'] = {\n\trefresh: function(listview) {\n\t\tlistview.page.set_primary_action(__('Add Workspace'), function() {\n\t\t\tfrappe.new_doc('Workspace');\n\t\t});\n\t}\n};\n",
+  "view": "List"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Course",
+  "enabled": 1,
+  "modified": "2026-08-20 15:31:59.217644",
+  "module": null,
+  "name": "Course",
+  "script": "frappe.ui.form.on(\"Course\", {\r\n    refresh(frm) {\r\n\r\n        frm.add_custom_button(\"Enter Course Name\", function () {\r\n\r\n            let dialog = new frappe.ui.Dialog({\r\n                title: \"Enter Course Name\",\r\n\r\n                fields: [\r\n                    {\r\n                        label: \"Course Name\",\r\n                        fieldname: \"course_name\",\r\n                        fieldtype: \"Data\",\r\n                        reqd: 1\r\n                    }\r\n                ],\r\n\r\n                primary_action_label: \"Create Course\",\r\n\r\n                primary_action(values) {\r\n\r\n                    dialog.hide();\r\n\r\n                    frappe.route_options = {\r\n                        course_name: values.course_name\r\n                    };\r\n\r\n                    frappe.new_doc(\"Course\");\r\n                }\r\n            });\r\n\r\n            dialog.show();\r\n        });\r\n    }\r\n});",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Task",
+  "enabled": 1,
+  "modified": "2026-08-20 16:10:25.949477",
+  "module": "Student Management Portal",
+  "name": "Tasks",
+  "script": "frappe.ui.form.on(\"Task\", {\n    refresh(frm) {\n        frm.add_custom_button(\"Create Task\", function() {\n            let dialog = new frappe.ui.Dialog({\n                title: \"Create New Task\",\n                fields: [\n                    {\n                        label: \"Task Subject\",\n                        fieldname: \"task_subject\",\n                        fieldtype: \"Data\",\n                        reqd: 1\n                    }\n                ],\n                primary_action_label: \"Create Task\",\n                primary_action(values) {\n                    frappe.call({\n                        method: \"practice_app.api.create_task\",\n                        args: {\n                            task_subject: values.task_subject\n                        },\n                        callback: function(r) {\n                            dialog.hide();\n                            frappe.msgprint({\n                                title: \"Success\",\n                                message: \"Task created successfully: \" + r.message,\n                                indicator: \"green\"\n                            });\n                        }\n                    });\n                }\n            });\n            dialog.show();\n        });\n    }\n});",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "User",
+  "enabled": 1,
+  "modified": "2026-08-24 12:33:40.534005",
+  "module": null,
+  "name": "User message",
+  "script": "frappe.ui.form.on('User', {\r\n    refresh(frm) {\r\n        frm.add_custom_button('Send Welcome Email', function() {\r\n            frappe.msgprint('Email Sent!');\r\n        }, 'Actions');\r\n    }\r\n});",
+  "view": "Form"
+ }
+]

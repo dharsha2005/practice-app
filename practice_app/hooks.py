@@ -31,7 +31,9 @@ add_to_apps_screen = [
 boot_session = [
 	"practice_app.utils.boot_session"
 ]
-
+fixtures = [
+    "Client Script"
+]
 # JSON Request Body handling per Frappe v17 standard
 use_json_request_body = True
 export_python_type_annotations = True
