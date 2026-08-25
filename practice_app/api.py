@@ -5,6 +5,7 @@
 import json
 import frappe
 from frappe import _
+from frappe.rate_limiter import rate_limit
 from typing import Dict, Any, List, Optional
 
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
@@ -797,3 +798,12 @@ def create_task(task_subject: str) -> str:
     task.save()
 
     return task.name
+
+
+@frappe.whitelist(allow_guest=True)
+@rate_limit(limit=5)
+def limited_greeting():
+	logger = frappe.logger()
+	logger.info("Endpoint called.")
+
+	frappe.response["message"] = "Hello, Rate Limited World!"
