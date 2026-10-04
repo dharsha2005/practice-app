@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:course_code",
- "creation": "2026-08-07 15:31:00.000000",
+ "creation": "2026-08-07 15:31:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -15,7 +15,13 @@
   "duration_years",
   "credits",
   "description_section",
-  "description"
+  "description",
+  "classes",
+  "lft",
+  "rgt",
+  "is_group",
+  "old_parent",
+  "parent_course"
  ],
  "fields": [
   {
@@ -79,16 +85,59 @@
    "fieldname": "description",
    "fieldtype": "Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "classes",
+   "fieldtype": "Table",
+   "label": "Class",
+   "options": "Class"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Old Parent",
+   "options": "Course"
+  },
+  {
+   "fieldname": "parent_course",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Parent Course",
+   "options": "Course"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_tree": 1,
  "links": [],
- "modified": "2026-08-10 15:43:00.000000",
+ "modified": "2026-09-01 11:52:03.769479",
  "modified_by": "Administrator",
  "module": "Practice App",
  "name": "Course",
  "naming_rule": "By fieldname",
+ "nsm_parent_field": "parent_course",
  "owner": "Administrator",
  "permissions": [
   {
@@ -104,6 +153,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -6,7 +6,6 @@
  "creation": "2026-08-07 10:31:02.894643",
  "doctype": "DocType",
  "engine": "InnoDB",
- "image_field": "student_photo",
  "field_order": [
   "student_information",
   "student_name",
@@ -43,7 +42,9 @@
   "student_photo",
   "cb_documents",
   "aadhaar_number",
-  "amended_from"
+  "amended_from",
+  "user",
+  "student_marks"
  ],
  "fields": [
   {
@@ -241,13 +242,26 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "student_marks",
+   "fieldtype": "Table",
+   "label": "Student Marks",
+   "options": "Student Marks"
   }
  ],
  "grid_page_length": 50,
+ "image_field": "student_photo",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-08-07 11:00:25.220892",
+ "modified": "2026-09-06 18:32:30.992537",
  "modified_by": "Administrator",
  "module": "Practice App",
  "name": "Student-form",

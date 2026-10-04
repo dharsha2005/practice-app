@@ -1,0 +1,80 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="container my-4" style="max-width: 600px;">
+    <h2>Student Registration</h2>
+    {% if frappe.session.user == "System Manager" or frappe.session.user == "Administrator" %}
+    <div id="alert-box" class="alert d-none" role="alert"></div>
+
+    <form id="student-form" class="mt-3">
+        <div class="mb-3">
+            <label for="student_name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="student_name" required>
+        </div>
+        <div class="mb-3">
+            <label for="register_number" class="form-label">Register Number</label>
+            <input type="text" class="form-control" id="register_number" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select class="form-select" id="department" required>
+                <option value="">Select Department</option>
+                {% for dept in departments %}
+                <option value="{{ dept.department_code }}">{{ dept.department_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select class="form-select" id="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+        <a href="/" class="btn btn-link">Cancel</a>
+    </form>
+    {% else %}
+    <div class="alert alert-danger">
+        Web users cannot register a student
+    </div>
+    {% endif %}
+
+    <script>
+        document.getElementById('student-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+
+            frappe.call({
+                method: 'practice_app.www.register.submit_student',
+                args: {
+                    student_name: document.getElementById('student_name').value,
+                    register_number: document.getElementById('register_number').value,
+                    email: document.getElementById('email').value,
+                    department: document.getElementById('department').value,
+                    gender: document.getElementById('gender').value
+                },
+                callback: function (r) {
+                    const alertBox = document.getElementById('alert-box');
+                    if (r.message && r.message.status === 'success') {
+                        alertBox.className = 'alert alert-success';
+                        alertBox.innerText = 'Application submitted successfully!';
+                        document.getElementById('student-form').reset();
+                    } else {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.innerText = 'Submission failed. Please try again.';
+                    }
+                    alertBox.classList.remove('d-none');
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}

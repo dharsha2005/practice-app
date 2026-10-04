@@ -1,0 +1,27 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div style="color:green;">
+    <h3 style="color: green;">
+        <center>Display Studnts</center>
+    </h3>
+</div>
+{% for student in students %}
+<center>
+    <div style="max-width: 500px; background-color: rgb(49, 186, 49); color: white;">
+        <center>
+            <h4>{{ student.student_name }}</h4>
+            <p class="mb-1"><strong>Register No:</strong> {{ student.register_number }}</p>
+            <p class="mb-1"><strong>Department:</strong> {{ student.department }}</p>
+            <p class="mb-1"><strong>Gender:</strong> {{ student.gender }}</p>
+        </center>
+    </div>
+</center>
+{% endfor %}
+<div class="btn btn-primary m-3">
+    <a href="/register" class="text-white" style="text-decoration: none;">Go to Register</a>
+</div>
+<div class="btn btn-primary m-3">
+    <a href="/" class="text-white" style="text-decoration: none;">Go to Home</a>
+</div>
+{% endblock %}

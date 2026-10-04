@@ -1,0 +1,26 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="container my-4">
+    <h2>Student Dashboard</h2>
+    {% if student %}
+    <div class="card p-4 my-3" style="max-width: 500px;">
+        <h4>{{ student.student_name }}</h4>
+        <p class="mb-1"><strong>Register No:</strong> {{ student.register_number }}</p>
+        <p class="mb-1"><strong>Department:</strong> {{ student.department }}</p>
+        <p class="mb-1"><strong>Gender:</strong> {{ student.gender }}</p>
+    </div>
+    {% elif frappe.session.user == "Administrator" %}
+
+    <a href="/register" class="btn btn-primary btn-sm">Register Now</a>
+    {% else %}
+    <div class="alert alert-info my-3">
+        Please login to access this page.
+    </div>
+    <a href="/login" class="btn btn-primary btn-sm">Login</a>
+    {% endif %}
+    <div class="mt-3">
+        <a href="/" class="btn btn-secondary btn-sm">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
