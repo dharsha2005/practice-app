@@ -52,11 +52,14 @@ WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/practice_app
 
 RUN ./env/bin/pip install --no-cache-dir -e /home/frappe/frappe-bench/apps/practice_app \
-    && echo "practice_app" >> /home/frappe/frappe-bench/sites/apps.txt \
+    && python3 -c "p='sites/apps.txt'; apps=[l.strip() for l in open(p) if l.strip()]; ('practice_app' in apps) or apps.append('practice_app'); open(p,'w').write('\n'.join(apps)+'\n')" \
     && (bench build --app practice_app || true)
 
 # 7. Configure Supervisor & Entrypoint
 USER root
+
+RUN ln -sf /home/frappe/.local/bin/bench /usr/local/bin/bench \
+    && ln -sf /home/frappe/.local/bin/bench /home/frappe/frappe-bench/env/bin/bench
 
 COPY supervisord.conf /etc/supervisor/conf.d/frappe.conf
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

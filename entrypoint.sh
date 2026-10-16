@@ -2,14 +2,15 @@
 set -e
 
 export PORT="${PORT:-8000}"
-export SITE_NAME="${SITE_NAME:-practice.localhost}"
+export SITE_NAME="${RENDER_EXTERNAL_HOSTNAME:-${SITE_NAME:-practice.localhost}}"
 export ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
 export ENABLE_WORKERS="${ENABLE_WORKERS:-true}"
 export FRAPPE_BENCH_DIR="/home/frappe/frappe-bench"
 
 cd "${FRAPPE_BENCH_DIR}"
 
-mkdir -p logs sites/assets
+mkdir -p logs sites/assets /var/run/mysqld
+chmod 777 /var/run/mysqld || true
 
 # Start internal Redis if no external Redis is provided
 if [ -z "$REDIS_CACHE" ] && [ -z "$REDIS_HOST" ] && [ -z "$REDIS_CACHE_URL" ]; then
@@ -19,6 +20,27 @@ fi
 
 # Ensure sites directory permissions if mounted as volume
 chown -R frappe:frappe sites logs || true
+
+# Clean up apps.txt if corrupted
+python3 -c "
+p = 'sites/apps.txt'
+try:
+    apps = [l.strip() for l in open(p) if l.strip()]
+    cleaned = []
+    for a in apps:
+        if a == 'frappepractice_app':
+            cleaned.extend(['frappe', 'practice_app'])
+        else:
+            cleaned.append(a)
+    if 'frappe' not in cleaned:
+        cleaned.insert(0, 'frappe')
+    if 'practice_app' not in cleaned:
+        cleaned.append('practice_app')
+    dedup = list(dict.fromkeys(cleaned))
+    open(p, 'w').write('\n'.join(dedup) + '\n')
+except Exception as e:
+    print('apps.txt error:', e)
+"
 
 # Configure default site routing for Render domain mapping
 python3 - <<EOF
@@ -34,8 +56,9 @@ if os.path.exists(conf_path):
     except Exception:
         pass
 
+site_name = os.environ.get("SITE_NAME", "practice.localhost")
 data["serve_default_site"] = True
-data["default_site"] = os.environ.get("SITE_NAME", "practice.localhost")
+data["default_site"] = site_name
 data["dns_multitenant"] = False
 
 if os.environ.get("REDIS_CACHE_URL"):
@@ -47,10 +70,10 @@ with open(conf_path, "w") as f:
     json.dump(data, f, indent=2)
 
 with open(os.path.join(sites_path, "currentsite.txt"), "w") as f:
-    f.write(os.environ.get("SITE_NAME", "practice.localhost") + "\n")
+    f.write(site_name + "\n")
 EOF
 
-# Database initialization / migration if DB_HOST is set
+# Database initialization / migration
 if [ -n "$DB_HOST" ]; then
     echo "External database host detected: $DB_HOST"
     DB_TYPE="${DB_TYPE:-mariadb}"
@@ -58,7 +81,7 @@ if [ -n "$DB_HOST" ]; then
     [ "$DB_TYPE" = "postgres" ] && DB_PORT="${DB_PORT:-5432}"
 
     if [ ! -d "sites/${SITE_NAME}" ]; then
-        echo "Creating new site ${SITE_NAME}..."
+        echo "Creating new site ${SITE_NAME} on ${DB_HOST}..."
         su frappe -c "bench new-site ${SITE_NAME} \
             --db-type ${DB_TYPE} \
             --db-host ${DB_HOST} \
@@ -73,13 +96,20 @@ if [ -n "$DB_HOST" ]; then
         su frappe -c "bench --site ${SITE_NAME} migrate" || true
     fi
 else
-    # Fallback to local MariaDB if no external database was provided
+    # Local MariaDB setup
     if command -v mariadbd >/dev/null 2>&1 || command -v mysqld >/dev/null 2>&1; then
         echo "Starting local MariaDB service..."
         service mariadb start || true
+        
+        # Configure root access for local site creation
+        mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('root'); FLUSH PRIVILEGES;" 2>/dev/null || \
+        mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root'; FLUSH PRIVILEGES;" 2>/dev/null || true
+
         if [ ! -d "sites/${SITE_NAME}" ]; then
             echo "Initializing local site ${SITE_NAME}..."
             su frappe -c "bench new-site ${SITE_NAME} \
+                --db-root-username root \
+                --db-root-password root \
                 --admin-password ${ADMIN_PASSWORD} \
                 --install-app practice_app \
                 --force" || true
