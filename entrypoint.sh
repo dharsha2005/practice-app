@@ -14,14 +14,14 @@ chmod 777 /var/run/mysqld || true
 
 # Start internal Redis if no external Redis is provided
 if [ -z "$REDIS_CACHE" ] && [ -z "$REDIS_HOST" ] && [ -z "$REDIS_CACHE_URL" ]; then
-    echo "Starting local Redis daemon..."
+    echo "Starting local Redis daemon on port 6379..."
     redis-server --daemonize yes
 fi
 
-# Ensure sites directory permissions if mounted as volume
+# Ensure sites directory permissions
 chown -R frappe:frappe sites logs || true
 
-# Clean up apps.txt if corrupted
+# Clean up apps.txt if needed
 python3 -c "
 p = 'sites/apps.txt'
 try:
@@ -42,7 +42,7 @@ except Exception as e:
     print('apps.txt error:', e)
 "
 
-# Configure default site routing for Render domain mapping
+# Configure common site config with Redis and default site
 python3 - <<EOF
 import json, os
 
@@ -61,10 +61,10 @@ data["serve_default_site"] = True
 data["default_site"] = site_name
 data["dns_multitenant"] = False
 
-if os.environ.get("REDIS_CACHE_URL"):
-    data["redis_cache"] = os.environ.get("REDIS_CACHE_URL")
-if os.environ.get("REDIS_QUEUE_URL"):
-    data["redis_queue"] = os.environ.get("REDIS_QUEUE_URL")
+# Configure Redis URLs (local fallback to 6379)
+data["redis_cache"] = os.environ.get("REDIS_CACHE_URL", os.environ.get("REDIS_CACHE", "redis://127.0.0.1:6379"))
+data["redis_queue"] = os.environ.get("REDIS_QUEUE_URL", os.environ.get("REDIS_QUEUE", "redis://127.0.0.1:6379"))
+data["redis_socketio"] = os.environ.get("REDIS_SOCKETIO_URL", "redis://127.0.0.1:6379")
 
 with open(conf_path, "w") as f:
     json.dump(data, f, indent=2)
@@ -121,6 +121,10 @@ else
         echo "Notice: DB_HOST is not set. Site creation requires database credentials."
     fi
 fi
+
+# Enable scheduler and fix assets permissions
+su frappe -c "bench --site ${SITE_NAME} enable-scheduler" || true
+chmod -R 755 sites/assets || true
 
 # Pass control to supervisor or user command
 if [ "$#" -gt 0 ]; then
