@@ -1,0 +1,12 @@
+.git
+.github
+*.pyc
+__pycache__
+*.pyo
+.DS_Store
+.venv
+node_modules
+*.egg-info
+.coverage
+htmlcov
+.pytest_cache

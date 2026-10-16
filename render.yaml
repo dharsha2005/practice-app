@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: practice-app
+    runtime: docker
+    plan: standard
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: SITE_NAME
+        value: practice.localhost
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: ENABLE_WORKERS
+        value: "true"
+      # To connect to an external MariaDB or Render PostgreSQL:
+      # - key: DB_HOST
+      #   value: your-db-host.com
+      # - key: DB_PORT
+      #   value: 3306
+      # - key: DB_TYPE
+      #   value: mariadb
+      # - key: DB_NAME
+      #   value: frappe
+      # - key: DB_PASSWORD
+      #   value: your-password
+      # To connect to external Redis:
+      # - key: REDIS_CACHE_URL
+      #   value: redis://red-xxxx:6379
+      # - key: REDIS_QUEUE_URL
+      #   value: redis://red-xxxx:6379
+    disk:
+      name: frappe-sites-data
+      mountPath: /home/frappe/frappe-bench/sites
+      sizeGB: 10
